@@ -9,7 +9,7 @@ AI-powered data ingestion pipeline frontend for Databricks Delta Lake. The platf
 - **Auth**: Replit OIDC (OpenID Connect) via passport + connect-pg-simple sessions
 - **State Management**: TanStack React Query with 1-second polling during pipeline execution
 - **Styling**: Shadcn/ui components, dark mode by default, Space Grotesk + Inter + JetBrains Mono fonts
-- **Brand Colors**: Primary = purple/violet (hue 262)
+- **Brand Colors**: Primary = orange (hue 25), gradients use orange → amber → yellow
 
 ## Key Files
 - `client/src/pages/home.tsx` - Main page with welcome view + pipeline execution view

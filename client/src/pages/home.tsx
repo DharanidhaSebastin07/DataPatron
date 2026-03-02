@@ -35,12 +35,12 @@ import {
 const AGENT_PREVIEWS = [
   { icon: Brain, label: "Parse Intent", color: "text-orange-400" },
   { icon: KeyRound, label: "Credentials", color: "text-amber-400" },
-  { icon: ShieldCheck, label: "Validate", color: "text-emerald-400" },
-  { icon: Database, label: "Metadata", color: "text-cyan-400" },
+  { icon: ShieldCheck, label: "Validate", color: "text-blue-400" },
+  { icon: Database, label: "Metadata", color: "text-sky-400" },
   { icon: GitBranch, label: "Strategy", color: "text-orange-300" },
-  { icon: TableProperties, label: "Schema", color: "text-pink-400" },
-  { icon: Table2, label: "Tables", color: "text-yellow-400" },
-  { icon: FileOutput, label: "Migrate", color: "text-teal-400" },
+  { icon: TableProperties, label: "Schema", color: "text-blue-300" },
+  { icon: Table2, label: "Tables", color: "text-amber-300" },
+  { icon: FileOutput, label: "Migrate", color: "text-blue-400" },
 ];
 
 function GridBackground() {
@@ -53,8 +53,8 @@ function GridBackground() {
           backgroundSize: "60px 60px",
         }}
       />
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-primary/5 blur-[120px]" />
-      <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] rounded-full bg-primary/3 blur-[100px]" />
+      <div className="absolute top-1/4 left-1/3 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-primary/5 blur-[120px]" />
+      <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] rounded-full bg-blue-500/4 blur-[100px]" />
     </div>
   );
 }
@@ -129,7 +129,7 @@ function WelcomeView({ onStart }: { onStart: (intent: string) => void }) {
 
       <header className="relative z-10 flex items-center justify-between gap-2 px-6 py-4">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-amber-400 flex items-center justify-center">
+          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-orange-500 to-blue-500 flex items-center justify-center">
             <Layers className="w-4.5 h-4.5 text-white" />
           </div>
           <div>
@@ -157,7 +157,7 @@ function WelcomeView({ onStart }: { onStart: (intent: string) => void }) {
 
           <h2 className="text-4xl md:text-5xl font-display font-bold tracking-tight mb-4 leading-tight" data-testid="text-heading">
             Ingest data into{" "}
-            <span className="bg-gradient-to-r from-primary via-amber-400 to-yellow-400 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-orange-500 via-amber-400 to-blue-400 bg-clip-text text-transparent">
               Databricks Delta
             </span>
           </h2>
@@ -240,7 +240,7 @@ function PipelineView({ session, onNewPipeline }: {
     <div className="h-screen flex flex-col bg-background">
       <header className="flex items-center justify-between gap-2 px-5 py-3 border-b border-border/30 shrink-0">
         <div className="flex items-center gap-3">
-          <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-primary to-amber-400 flex items-center justify-center">
+          <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-orange-500 to-blue-500 flex items-center justify-center">
             <Layers className="w-3.5 h-3.5 text-white" />
           </div>
           <div>

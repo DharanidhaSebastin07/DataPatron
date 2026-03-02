@@ -1,10 +1,7 @@
-import { type User, type InsertUser, type PipelineSession, type AgentStep, type ChatMessage, type LogEntry, AGENT_DEFINITIONS } from "@shared/schema";
+import { type PipelineSession, type AgentStep, type ChatMessage, type LogEntry, AGENT_DEFINITIONS } from "@shared/schema";
 import { randomUUID } from "crypto";
 
 export interface IStorage {
-  getUser(id: string): Promise<User | undefined>;
-  getUserByUsername(username: string): Promise<User | undefined>;
-  createUser(user: InsertUser): Promise<User>;
   createSession(): PipelineSession;
   getSession(id: string): PipelineSession | undefined;
   startPipeline(id: string, intent: string): void;
@@ -98,31 +95,12 @@ const PROCESSING_LOGS: Record<number, { message: string; level: LogEntry["level"
 };
 
 export class MemStorage implements IStorage {
-  private users: Map<string, User>;
   private sessions: Map<string, PipelineSession>;
   private activeTimers: Map<string, NodeJS.Timeout[]>;
 
   constructor() {
-    this.users = new Map();
     this.sessions = new Map();
     this.activeTimers = new Map();
-  }
-
-  async getUser(id: string): Promise<User | undefined> {
-    return this.users.get(id);
-  }
-
-  async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.username === username,
-    );
-  }
-
-  async createUser(insertUser: InsertUser): Promise<User> {
-    const id = randomUUID();
-    const user: User = { ...insertUser, id };
-    this.users.set(id, user);
-    return user;
   }
 
   createSession(): PipelineSession {
@@ -144,7 +122,7 @@ export class MemStorage implements IStorage {
       messages: [{
         id: randomUUID(),
         role: "system",
-        content: "Welcome to the Bronze Ingestion Platform. Describe what data you'd like to ingest into your Databricks Delta Lake.",
+        content: "Welcome to DataPatron. Describe what data you'd like to ingest into your Databricks Delta Lake.",
         timestamp: new Date().toISOString(),
       }],
       intent: null,

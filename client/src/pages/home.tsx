@@ -5,12 +5,12 @@ import { type PipelineSession } from "@shared/schema";
 import { PipelineFlow, AgentDetail } from "@/components/pipeline-flow";
 import { ChatPanel } from "@/components/chat-panel";
 import { useTheme } from "@/components/theme-provider";
+import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { motion } from "framer-motion";
 import {
   Play,
-  Database,
   Layers,
   Sparkles,
   ArrowRight,
@@ -20,16 +20,20 @@ import {
   Brain,
   KeyRound,
   ShieldCheck,
+  Database,
   GitBranch,
   TableProperties,
   Table2,
   FileOutput,
   Download,
   CheckCircle2,
+  LogOut,
+  LogIn,
+  Loader2,
 } from "lucide-react";
 
 const AGENT_PREVIEWS = [
-  { icon: Brain, label: "Parse Intent", color: "text-blue-400" },
+  { icon: Brain, label: "Parse Intent", color: "text-violet-400" },
   { icon: KeyRound, label: "Credentials", color: "text-amber-400" },
   { icon: ShieldCheck, label: "Validate", color: "text-emerald-400" },
   { icon: Database, label: "Metadata", color: "text-cyan-400" },
@@ -64,6 +68,52 @@ function ThemeToggle() {
   );
 }
 
+function UserMenu() {
+  const { user, isLoading, isAuthenticated, logout } = useAuth();
+
+  if (isLoading) {
+    return (
+      <Button size="sm" variant="secondary" disabled data-testid="button-auth-loading">
+        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+      </Button>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return (
+      <Button size="sm" variant="default" onClick={() => window.location.href = "/api/login"} data-testid="button-login">
+        <LogIn className="w-3.5 h-3.5 mr-1.5" />
+        Sign In
+      </Button>
+    );
+  }
+
+  return (
+    <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2">
+        {user?.profileImageUrl ? (
+          <img
+            src={user.profileImageUrl}
+            alt={user.firstName || "User"}
+            className="w-7 h-7 rounded-full border border-border/50 object-cover"
+            data-testid="img-user-avatar"
+          />
+        ) : (
+          <div className="w-7 h-7 rounded-full bg-primary/20 flex items-center justify-center text-xs font-semibold text-primary" data-testid="text-user-initial">
+            {(user?.firstName?.[0] || user?.email?.[0] || "U").toUpperCase()}
+          </div>
+        )}
+        <span className="text-xs font-medium hidden sm:block" data-testid="text-user-name">
+          {user?.firstName || user?.email || "User"}
+        </span>
+      </div>
+      <Button size="icon" variant="secondary" onClick={() => logout()} data-testid="button-logout">
+        <LogOut className="w-3.5 h-3.5" />
+      </Button>
+    </div>
+  );
+}
+
 function WelcomeView({ onStart }: { onStart: (intent: string) => void }) {
   const [intent, setIntent] = useState("");
 
@@ -79,15 +129,18 @@ function WelcomeView({ onStart }: { onStart: (intent: string) => void }) {
 
       <header className="relative z-10 flex items-center justify-between gap-2 px-6 py-4">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-blue-400 flex items-center justify-center">
+          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-violet-400 flex items-center justify-center">
             <Layers className="w-4.5 h-4.5 text-white" />
           </div>
           <div>
-            <h1 className="text-sm font-display font-bold tracking-tight" data-testid="text-brand">Bronze Ingestion</h1>
+            <h1 className="text-sm font-display font-bold tracking-tight" data-testid="text-brand">DataPatron</h1>
             <p className="text-[10px] text-muted-foreground font-mono uppercase tracking-widest">Data Pipeline Platform</p>
           </div>
         </div>
-        <ThemeToggle />
+        <div className="flex items-center gap-2">
+          <ThemeToggle />
+          <UserMenu />
+        </div>
       </header>
 
       <main className="relative z-10 flex-1 flex flex-col items-center justify-center px-6 pb-24">
@@ -104,7 +157,7 @@ function WelcomeView({ onStart }: { onStart: (intent: string) => void }) {
 
           <h2 className="text-4xl md:text-5xl font-display font-bold tracking-tight mb-4 leading-tight" data-testid="text-heading">
             Ingest data into{" "}
-            <span className="bg-gradient-to-r from-primary via-blue-400 to-cyan-400 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-primary via-violet-400 to-fuchsia-400 bg-clip-text text-transparent">
               Databricks Delta
             </span>
           </h2>
@@ -121,11 +174,7 @@ function WelcomeView({ onStart }: { onStart: (intent: string) => void }) {
                 className="min-h-[100px] resize-none border-0 bg-transparent text-sm focus-visible:ring-0 placeholder:text-muted-foreground/40"
                 data-testid="input-intent"
               />
-              <div className="flex items-center justify-between gap-2 px-2 pt-1 pb-1 flex-wrap">
-                <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground/40 font-mono">
-                  <Database className="w-3 h-3" />
-                  Azure SQL &middot; S3 &middot; PostgreSQL &middot; REST API
-                </div>
+              <div className="flex items-center justify-end gap-2 px-2 pt-1 pb-1 flex-wrap">
                 <Button
                   size="sm"
                   disabled={!intent.trim()}
@@ -191,11 +240,11 @@ function PipelineView({ session, onNewPipeline }: {
     <div className="h-screen flex flex-col bg-background">
       <header className="flex items-center justify-between gap-2 px-5 py-3 border-b border-border/30 shrink-0">
         <div className="flex items-center gap-3">
-          <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-primary to-blue-400 flex items-center justify-center">
+          <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-primary to-violet-400 flex items-center justify-center">
             <Layers className="w-3.5 h-3.5 text-white" />
           </div>
           <div>
-            <h1 className="text-sm font-display font-bold tracking-tight">Bronze Ingestion</h1>
+            <h1 className="text-sm font-display font-bold tracking-tight">DataPatron</h1>
             <p className="text-[10px] text-muted-foreground font-mono">Session {session.id}</p>
           </div>
         </div>
@@ -205,6 +254,7 @@ function PipelineView({ session, onNewPipeline }: {
             New Pipeline
           </Button>
           <ThemeToggle />
+          <UserMenu />
         </div>
       </header>
 

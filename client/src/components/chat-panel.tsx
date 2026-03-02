@@ -7,15 +7,15 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
   Send,
-  Bot,
   User,
-  Info,
-  KeyRound,
-  Table2,
+  Fingerprint,
+  LayoutGrid,
   Check,
   X,
   Pencil,
   Zap,
+  Activity,
+  Sparkles,
 } from "lucide-react";
 
 interface ChatPanelProps {
@@ -76,7 +76,7 @@ function CredentialsForm({ session, onSubmit }: { session: PipelineSession; onSu
 
   if (submitted) {
     return (
-      <div className="flex items-center gap-2 text-xs text-emerald-500 py-2">
+      <div className="flex items-center gap-2 text-xs text-emerald-500 py-2 font-mono">
         <Check className="w-3.5 h-3.5" />
         <span>Credentials submitted</span>
       </div>
@@ -87,34 +87,34 @@ function CredentialsForm({ session, onSubmit }: { session: PipelineSession; onSu
     <motion.div
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
-      className="rounded-lg border border-border/60 bg-card/50 p-4 space-y-3"
+      className="rounded-xl border border-border/40 bg-card/60 backdrop-blur-sm overflow-hidden"
       data-testid="credentials-form"
     >
-      <div className="flex items-center gap-2 mb-1">
-        <KeyRound className="w-4 h-4 text-amber-500" />
-        <span className="text-sm font-semibold">{sourceType} Credentials</span>
+      <div className="flex items-center gap-2 px-4 py-2.5 border-b border-border/20 bg-amber-500/5">
+        <Fingerprint className="w-3.5 h-3.5 text-amber-500" />
+        <span className="text-xs font-display font-semibold">{sourceType} Credentials</span>
       </div>
-      <div className="space-y-2.5">
+      <div className="p-4 space-y-2.5">
         {fields.map((field) => (
           <div key={field.label} className="space-y-1">
-            <Label className="text-xs text-muted-foreground">{field.label}</Label>
+            <Label className="text-[10px] uppercase tracking-wider text-muted-foreground/50 font-mono">{field.label}</Label>
             <Input
               type={field.type}
               placeholder={field.placeholder}
-              className="text-sm bg-background/50"
+              className="text-sm bg-background/40 border-border/30 h-8"
               onChange={(e) => setValues(prev => ({ ...prev, [field.label.toLowerCase().replace(/\s+/g, "_")]: e.target.value }))}
               data-testid={`input-${field.label.toLowerCase().replace(/\s+/g, "-")}`}
             />
           </div>
         ))}
       </div>
-      <div className="flex gap-2 pt-1">
-        <Button size="sm" onClick={handleSubmit} data-testid="button-submit-credentials">
-          <Send className="w-3.5 h-3.5 mr-1.5" />
+      <div className="flex gap-2 px-4 pb-4">
+        <Button size="sm" onClick={handleSubmit} className="gap-1.5" data-testid="button-submit-credentials">
+          <Send className="w-3 h-3" />
           Submit
         </Button>
-        <Button size="sm" variant="secondary" onClick={handleDemo} data-testid="button-demo-credentials">
-          <Zap className="w-3.5 h-3.5 mr-1.5" />
+        <Button size="sm" variant="secondary" onClick={handleDemo} className="gap-1.5" data-testid="button-demo-credentials">
+          <Zap className="w-3 h-3" />
           Use Demo Data
         </Button>
       </div>
@@ -142,7 +142,7 @@ function TableApprovalForm({ session, onSubmit }: { session: PipelineSession; on
 
   if (submitted) {
     return (
-      <div className="flex items-center gap-2 text-xs text-emerald-500 py-2">
+      <div className="flex items-center gap-2 text-xs text-emerald-500 py-2 font-mono">
         <Check className="w-3.5 h-3.5" />
         <span>Tables approved</span>
       </div>
@@ -153,31 +153,31 @@ function TableApprovalForm({ session, onSubmit }: { session: PipelineSession; on
     <motion.div
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
-      className="rounded-lg border border-border/60 bg-card/50 p-4 space-y-3"
+      className="rounded-xl border border-border/40 bg-card/60 backdrop-blur-sm overflow-hidden"
       data-testid="table-approval-form"
     >
-      <div className="flex items-center gap-2 mb-1">
-        <Table2 className="w-4 h-4 text-amber-500" />
-        <span className="text-sm font-semibold">Review Table Names</span>
+      <div className="flex items-center gap-2 px-4 py-2.5 border-b border-border/20 bg-amber-500/5">
+        <LayoutGrid className="w-3.5 h-3.5 text-amber-500" />
+        <span className="text-xs font-display font-semibold">Review Table Names</span>
       </div>
-      <div className="space-y-2">
+      <div className="p-3 space-y-2">
         {tables.map((tableName) => (
-          <div key={tableName} className="rounded-md border border-border/40 bg-background/30 p-3" data-testid={`table-review-${tableName}`}>
+          <div key={tableName} className="rounded-lg border border-border/25 bg-background/30 p-2.5" data-testid={`table-review-${tableName}`}>
             <div className="flex items-center justify-between gap-2">
-              <div className="flex-1">
-                <code className="text-xs font-mono text-primary">{actions[tableName]?.customName || tableName}</code>
-                <pre className="text-[10px] font-mono text-muted-foreground/60 mt-1 overflow-hidden">
+              <div className="flex-1 min-w-0">
+                <code className="text-[11px] font-mono text-primary break-all">{actions[tableName]?.customName || tableName}</code>
+                <pre className="text-[9px] font-mono text-muted-foreground/30 mt-0.5 overflow-hidden">
                   CREATE TABLE IF NOT EXISTS {actions[tableName]?.customName || tableName} (...)
                 </pre>
               </div>
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-1 shrink-0">
                 <Button
                   size="icon"
                   variant={actions[tableName]?.action === "accept" ? "default" : "secondary"}
                   onClick={() => setActions(prev => ({ ...prev, [tableName]: { action: "accept" } }))}
                   data-testid={`button-accept-${tableName}`}
                 >
-                  <Check className="w-3.5 h-3.5" />
+                  <Check className="w-3 h-3" />
                 </Button>
                 <Button
                   size="icon"
@@ -188,7 +188,7 @@ function TableApprovalForm({ session, onSubmit }: { session: PipelineSession; on
                   }}
                   data-testid={`button-rename-${tableName}`}
                 >
-                  <Pencil className="w-3.5 h-3.5" />
+                  <Pencil className="w-3 h-3" />
                 </Button>
                 <Button
                   size="icon"
@@ -196,7 +196,7 @@ function TableApprovalForm({ session, onSubmit }: { session: PipelineSession; on
                   onClick={() => setActions(prev => ({ ...prev, [tableName]: { action: "skip" } }))}
                   data-testid={`button-skip-${tableName}`}
                 >
-                  <X className="w-3.5 h-3.5" />
+                  <X className="w-3 h-3" />
                 </Button>
               </div>
             </div>
@@ -204,7 +204,7 @@ function TableApprovalForm({ session, onSubmit }: { session: PipelineSession; on
               <div className="mt-2">
                 <Input
                   defaultValue={tableName}
-                  className="text-xs font-mono bg-background/50"
+                  className="text-[11px] font-mono bg-background/40 h-7"
                   onChange={(e) => setActions(prev => ({ ...prev, [tableName]: { action: "rename", customName: e.target.value } }))}
                   data-testid={`input-rename-${tableName}`}
                 />
@@ -213,11 +213,21 @@ function TableApprovalForm({ session, onSubmit }: { session: PipelineSession; on
           </div>
         ))}
       </div>
-      <Button size="sm" onClick={handleSubmit} data-testid="button-approve-tables">
-        <Check className="w-3.5 h-3.5 mr-1.5" />
-        Approve & Create Tables
-      </Button>
+      <div className="px-4 pb-3">
+        <Button size="sm" onClick={handleSubmit} className="gap-1.5" data-testid="button-approve-tables">
+          <Check className="w-3 h-3" />
+          Approve & Create Tables
+        </Button>
+      </div>
     </motion.div>
+  );
+}
+
+function AgentAvatar() {
+  return (
+    <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-primary/80 to-violet-500/80 flex items-center justify-center shrink-0">
+      <Activity className="w-3 h-3 text-white" />
+    </div>
   );
 }
 
@@ -232,29 +242,26 @@ function MessageBubble({ message, session, onSubmitCredentials, onSubmitTableApp
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 6 }}
+      initial={{ opacity: 0, y: 4 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.25 }}
+      transition={{ duration: 0.2 }}
       className={cn(
         "flex gap-2.5",
         isUser && "flex-row-reverse",
       )}
     >
       {!isUser && (
-        <div className={cn(
-          "w-7 h-7 rounded-full flex items-center justify-center shrink-0 mt-0.5",
-          isSystem ? "bg-muted" : "bg-primary/10",
-        )}>
-          {isSystem ? (
-            <Info className="w-3.5 h-3.5 text-muted-foreground" />
-          ) : (
-            <Bot className="w-3.5 h-3.5 text-primary" />
-          )}
-        </div>
+        isSystem ? (
+          <div className="w-7 h-7 rounded-lg bg-muted/50 flex items-center justify-center shrink-0">
+            <Sparkles className="w-3 h-3 text-muted-foreground/50" />
+          </div>
+        ) : (
+          <AgentAvatar />
+        )
       )}
       {isUser && (
-        <div className="w-7 h-7 rounded-full bg-primary/20 flex items-center justify-center shrink-0 mt-0.5">
-          <User className="w-3.5 h-3.5 text-primary" />
+        <div className="w-7 h-7 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center shrink-0">
+          <User className="w-3 h-3 text-primary/70" />
         </div>
       )}
       <div className={cn(
@@ -262,24 +269,24 @@ function MessageBubble({ message, session, onSubmitCredentials, onSubmitTableApp
         isUser && "text-right",
       )}>
         <div className={cn(
-          "inline-block text-sm leading-relaxed rounded-lg px-3 py-2 max-w-full text-left",
-          isUser && "bg-primary/10 text-foreground",
-          isSystem && "bg-transparent text-muted-foreground italic",
-          !isUser && !isSystem && "bg-card/60 text-foreground",
+          "inline-block text-[13px] leading-relaxed rounded-xl px-3.5 py-2 max-w-full text-left",
+          isUser && "bg-primary/8 border border-primary/10 text-foreground",
+          isSystem && "bg-transparent text-muted-foreground/60 text-xs italic",
+          !isUser && !isSystem && "bg-card/70 border border-border/20 text-foreground/90",
         )}>
           {message.content}
         </div>
         {message.formType === "credentials" && (
-          <div className="mt-2 text-left">
+          <div className="mt-2.5 text-left">
             <CredentialsForm session={session} onSubmit={onSubmitCredentials} />
           </div>
         )}
         {message.formType === "table_approval" && (
-          <div className="mt-2 text-left">
+          <div className="mt-2.5 text-left">
             <TableApprovalForm session={session} onSubmit={onSubmitTableApproval} />
           </div>
         )}
-        <div className="text-[10px] text-muted-foreground/40 mt-1 font-mono">
+        <div className="text-[9px] text-muted-foreground/25 mt-1 font-mono tabular-nums">
           {new Date(message.timestamp).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })}
         </div>
       </div>
@@ -298,10 +305,12 @@ export function ChatPanel({ session, onSubmitCredentials, onSubmitTableApproval 
 
   return (
     <div className="flex flex-col h-full" data-testid="chat-panel">
-      <div className="flex items-center gap-2 px-4 py-3 border-b border-border/30">
-        <Bot className="w-4 h-4 text-primary" />
-        <span className="text-sm font-semibold">Agent Communication</span>
-        <span className="ml-auto text-[10px] font-mono text-muted-foreground/50">{session.messages.length} messages</span>
+      <div className="flex items-center gap-2.5 px-4 py-3 border-b border-border/20">
+        <AgentAvatar />
+        <div>
+          <span className="text-xs font-display font-semibold">Agent Feed</span>
+          <p className="text-[9px] text-muted-foreground/35 font-mono">{session.messages.length} messages</p>
+        </div>
       </div>
 
       <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-4">

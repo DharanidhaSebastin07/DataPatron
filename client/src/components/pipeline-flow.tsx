@@ -41,132 +41,123 @@ const STEP_FULL_NAMES: Record<number, string> = {
   8: "Migration Plan",
 };
 
-interface AgentCardProps {
+function StatusIndicator({ status }: { status: StepStatus }) {
+  if (status === "completed") {
+    return (
+      <div className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-emerald-500 flex items-center justify-center" data-testid="status-completed">
+        <Check className="w-3 h-3 text-white" />
+      </div>
+    );
+  }
+  if (status === "error") {
+    return (
+      <div className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-red-500 flex items-center justify-center" data-testid="status-error">
+        <AlertCircle className="w-3 h-3 text-white" />
+      </div>
+    );
+  }
+  if (status === "waiting_input") {
+    return (
+      <div className="absolute -top-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center animate-glow-pulse" style={{ backgroundColor: "#f18a31" }} data-testid="status-waiting">
+        <Clock className="w-3 h-3 text-white" />
+      </div>
+    );
+  }
+  return null;
+}
+
+function ConnectionLine({ fromStatus, toStatus }: { fromStatus: StepStatus; toStatus: StepStatus }) {
+  const isActive = fromStatus === "completed" && (toStatus === "processing" || toStatus === "completed" || toStatus === "waiting_input");
+  const isComplete = fromStatus === "completed" && toStatus === "completed";
+  const isFlowing = fromStatus === "completed" && toStatus === "processing";
+
+  return (
+    <div className="flex-1 flex items-center relative min-w-[20px] max-w-[40px]">
+      <div className={cn(
+        "w-full h-[2px] rounded-full transition-all duration-700",
+        isComplete ? "bg-emerald-500/60" : isActive ? "bg-[#033c67]/40" : "bg-muted-foreground/10"
+      )} />
+      {isFlowing && (
+        <div className="absolute inset-0 flex items-center">
+          <motion.div
+            className="absolute w-3 h-[2px] rounded-full"
+            style={{ backgroundColor: "#033c67" }}
+            animate={{ left: ["0%", "100%"] }}
+            transition={{ duration: 1.2, repeat: Infinity, ease: "linear" }}
+          />
+        </div>
+      )}
+    </div>
+  );
+}
+
+interface AgentNodeProps {
   step: AgentStep;
   isActive: boolean;
   index: number;
-  total: number;
 }
 
-function AgentCard({ step, isActive, index, total }: AgentCardProps) {
+function AgentNode({ step, isActive, index }: AgentNodeProps) {
   const Icon = STEP_ICONS[step.id] || Brain;
   const status = step.status;
   const fullName = STEP_FULL_NAMES[step.id] || step.name;
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 6 }}
+      initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.04, duration: 0.3 }}
-      className={cn(
-        "group relative flex items-center gap-3 px-3.5 py-2.5 rounded-xl border transition-all duration-500 backdrop-blur-sm",
-        status === "idle" && "border-border/20 bg-card/20 opacity-40",
-        status === "processing" && "border-[#f46902]/40 bg-gradient-to-r from-[#f46902]/8 to-[#f18a31]/5 shadow-lg shadow-[#f46902]/5",
-        status === "completed" && "border-[#033c67]/30 bg-[#033c67]/5",
-        status === "error" && "border-red-500/40 bg-red-500/5",
-        status === "waiting_input" && "border-[#f18a31]/50 bg-[#f18a31]/8 shadow-md shadow-[#f18a31]/5",
-        isActive && status === "processing" && "ring-1 ring-[#f46902]/20 ring-offset-1 ring-offset-background",
-      )}
+      transition={{ delay: index * 0.06, duration: 0.3 }}
+      className="flex flex-col items-center gap-1.5 relative"
       data-testid={`agent-node-${step.id}`}
     >
-      {status === "processing" && (
-        <motion.div
-          className="absolute inset-0 rounded-xl overflow-hidden"
-          style={{ background: "linear-gradient(90deg, transparent 0%, rgba(244,105,2,0.06) 50%, transparent 100%)" }}
-          animate={{ backgroundPosition: ["0% 0%", "200% 0%"] }}
-          transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
-        />
-      )}
-
       <div className={cn(
-        "relative w-9 h-9 rounded-lg flex items-center justify-center shrink-0 transition-all duration-400",
-        status === "idle" && "bg-muted/40",
-        status === "processing" && "bg-[#f46902]/15",
-        status === "completed" && "bg-[#033c67]/15",
-        status === "error" && "bg-red-500/15",
-        status === "waiting_input" && "bg-[#f18a31]/15",
+        "relative w-11 h-11 rounded-full flex items-center justify-center border-2 transition-all duration-500",
+        status === "idle" && "border-muted-foreground/15 bg-muted/30",
+        status === "processing" && "border-[#033c67] bg-[#033c67]/10",
+        status === "completed" && "border-emerald-500/70 bg-emerald-500/10",
+        status === "error" && "border-red-500 bg-red-500/10",
+        status === "waiting_input" && "border-[#f18a31]/70 bg-[#f18a31]/10",
+        isActive && "ring-2 ring-[#033c67]/20 ring-offset-2 ring-offset-background",
       )}>
-        {status === "processing" ? (
-          <Loader2 className="w-4 h-4 animate-spin" style={{ color: "#f46902" }} />
-        ) : status === "completed" ? (
-          <Check className="w-4 h-4" style={{ color: "#033c67" }} />
-        ) : status === "error" ? (
-          <AlertCircle className="w-4 h-4 text-red-500" />
-        ) : status === "waiting_input" ? (
-          <Clock className="w-4 h-4 animate-pulse" style={{ color: "#f18a31" }} />
-        ) : (
-          <Icon className="w-4 h-4 text-muted-foreground/30" />
+        {status === "processing" && (
+          <div className="absolute inset-0 rounded-full border-2 border-transparent border-t-[#033c67] animate-agent-ring" />
         )}
+        {status === "processing" ? (
+          <Loader2 className="w-4.5 h-4.5 animate-spin" style={{ color: "#033c67" }} />
+        ) : (
+          <Icon className={cn(
+            "w-4.5 h-4.5 transition-colors duration-300",
+            status === "idle" && "text-muted-foreground/40",
+            status === "completed" && "text-emerald-500",
+            status === "error" && "text-red-500",
+            status === "waiting_input" && "text-[#f18a31]",
+          )} />
+        )}
+        <StatusIndicator status={status} />
       </div>
-
-      <div className="min-w-0 flex-1">
-        <div className={cn(
-          "text-[11px] font-semibold leading-tight transition-colors duration-300",
+      <div className="flex flex-col items-center gap-0.5">
+        <span className={cn(
+          "text-[10px] font-bold tracking-wide uppercase transition-colors duration-300",
           status === "idle" && "text-muted-foreground/40",
-          status === "processing" && "text-[#f46902]",
-          status === "completed" && "text-[#033c67] dark:text-[#5b9bd5]",
-          status === "error" && "text-red-500",
-          status === "waiting_input" && "text-[#f18a31]",
+          status === "processing" && "text-[#033c67] dark:text-[#5b9bd5]",
+          status === "completed" && "text-emerald-500/80",
+          status === "error" && "text-red-500/80",
+          status === "waiting_input" && "text-[#f18a31]/80",
+        )}>
+          {step.shortName}
+        </span>
+        <span className={cn(
+          "text-[8px] max-w-[70px] text-center leading-tight transition-colors duration-300",
+          status === "idle" && "text-muted-foreground/30",
+          status === "processing" && "text-[#033c67]/60 dark:text-[#5b9bd5]/60",
+          status === "completed" && "text-emerald-500/50",
+          status === "error" && "text-red-400/50",
+          status === "waiting_input" && "text-[#f18a31]/50",
         )}>
           {fullName}
-        </div>
-        <div className={cn(
-          "text-[9px] mt-0.5 font-medium tracking-wide uppercase transition-colors duration-300",
-          status === "idle" && "text-muted-foreground/25",
-          status === "processing" && "text-[#f46902]/60",
-          status === "completed" && "text-[#033c67]/50 dark:text-[#5b9bd5]/50",
-          status === "error" && "text-red-400/60",
-          status === "waiting_input" && "text-[#f18a31]/60",
-        )}>
-          {status === "processing" ? "Processing..." :
-           status === "completed" ? "Completed" :
-           status === "waiting_input" ? "Awaiting Input" :
-           status === "error" ? "Failed" :
-           `Step ${step.id} of ${8}`}
-        </div>
+        </span>
       </div>
-
-      {status === "completed" && (
-        <div className="w-5 h-5 rounded-full flex items-center justify-center shrink-0" style={{ backgroundColor: "#033c67" }}>
-          <Check className="w-3 h-3 text-white" />
-        </div>
-      )}
-      {status === "processing" && (
-        <div className="w-5 h-5 rounded-full flex items-center justify-center shrink-0 border-2" style={{ borderColor: "#f46902" }}>
-          <div className="w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: "#f46902" }} />
-        </div>
-      )}
-      {status === "waiting_input" && (
-        <div className="w-5 h-5 rounded-full flex items-center justify-center shrink-0 border-2 animate-pulse" style={{ borderColor: "#f18a31", backgroundColor: "#f18a31" }}>
-          <Clock className="w-3 h-3 text-white" />
-        </div>
-      )}
     </motion.div>
-  );
-}
-
-function StepConnector({ fromStatus, toStatus }: { fromStatus: StepStatus; toStatus: StepStatus }) {
-  const isActive = fromStatus === "completed" && (toStatus === "processing" || toStatus === "completed" || toStatus === "waiting_input");
-  const isFlowing = fromStatus === "completed" && toStatus === "processing";
-  const isDone = fromStatus === "completed" && toStatus === "completed";
-
-  return (
-    <div className="flex items-center shrink-0 px-0.5 py-3">
-      <div className="relative w-8 h-[2px] rounded-full overflow-hidden">
-        <div className={cn(
-          "absolute inset-0 rounded-full transition-all duration-700",
-          isDone ? "bg-[#033c67]/40" : isActive ? "bg-[#f46902]/30" : "bg-muted-foreground/10"
-        )} />
-        {isFlowing && (
-          <motion.div
-            className="absolute inset-y-0 w-4 rounded-full"
-            style={{ background: "linear-gradient(90deg, transparent, #f46902, transparent)" }}
-            animate={{ left: ["-16px", "32px"] }}
-            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-          />
-        )}
-      </div>
-    </div>
   );
 }
 
@@ -178,50 +169,43 @@ interface PipelineFlowProps {
 export function PipelineFlow({ steps, currentStep }: PipelineFlowProps) {
   const completedCount = steps.filter(s => s.status === "completed").length;
   const progress = Math.round((completedCount / steps.length) * 100);
-  const activeStep = steps.find(s => s.status === "processing" || s.status === "waiting_input");
 
   return (
     <div className="w-full" data-testid="pipeline-flow">
-      <div className="flex items-center justify-between mb-3">
-        <div className="flex items-center gap-3">
+      <div className="flex items-center justify-between mb-3 px-1">
+        <div className="flex items-center gap-2">
           <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: "#033c67" }}>Pipeline Progress</span>
-          {activeStep && (
-            <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-semibold" style={{ backgroundColor: "rgba(244,105,2,0.1)", color: "#f46902" }}>
-              <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ backgroundColor: "#f46902" }} />
-              {STEP_FULL_NAMES[activeStep.id]}
-            </span>
-          )}
+          <span className="text-xs font-mono" style={{ color: "#f46902" }}>{completedCount}/{steps.length}</span>
         </div>
-        <div className="flex items-center gap-3">
-          <div className="w-36 h-2 rounded-full bg-muted/60 overflow-hidden">
+        <div className="flex items-center gap-2">
+          <div className="w-24 h-1.5 rounded-full bg-muted overflow-hidden">
             <motion.div
               className="h-full rounded-full"
-              style={{ background: progress === 100 ? "#033c67" : "linear-gradient(90deg, #f46902, #f18a31)" }}
+              style={{ background: progress === 100 ? "linear-gradient(90deg, #22c55e, #16a34a)" : "linear-gradient(90deg, #033c67, #0e5a8a)" }}
               initial={{ width: 0 }}
               animate={{ width: `${progress}%` }}
-              transition={{ duration: 0.6, ease: "easeOut" }}
+              transition={{ duration: 0.5 }}
             />
           </div>
-          <span className="text-xs font-mono font-semibold tabular-nums" style={{ color: progress === 100 ? "#033c67" : "#f46902" }}>{completedCount}/{steps.length}</span>
+          <span className="text-xs font-mono text-muted-foreground">{progress}%</span>
         </div>
       </div>
 
-      <div className="flex items-center overflow-x-auto pb-1 scrollbar-thin">
+      <div className="flex items-start justify-center gap-0 px-2">
         {steps.map((step, i) => (
-          <div key={step.id} className="flex items-center min-w-0">
-            <div className="min-w-[150px] max-w-[180px]">
-              <AgentCard
-                step={step}
-                isActive={step.id === currentStep}
-                index={i}
-                total={steps.length}
-              />
-            </div>
+          <div key={step.id} className="flex items-start">
+            <AgentNode
+              step={step}
+              isActive={step.id === currentStep}
+              index={i}
+            />
             {i < steps.length - 1 && (
-              <StepConnector
-                fromStatus={step.status}
-                toStatus={steps[i + 1].status}
-              />
+              <div className="mt-5 px-0.5">
+                <ConnectionLine
+                  fromStatus={step.status}
+                  toStatus={steps[i + 1].status}
+                />
+              </div>
             )}
           </div>
         ))}
@@ -252,16 +236,16 @@ export function AgentDetail({ step, sessionStatus }: AgentDetailProps) {
       <div className="flex items-center gap-3 mb-4 px-1">
         <div className={cn(
           "w-10 h-10 rounded-xl flex items-center justify-center",
-          step.status === "processing" && "bg-[#f46902]/10",
-          step.status === "completed" && "bg-[#033c67]/10",
+          step.status === "processing" && "bg-[#033c67]/10",
+          step.status === "completed" && "bg-emerald-500/10",
           step.status === "waiting_input" && "bg-[#f18a31]/10",
           step.status === "idle" && "bg-muted/50",
           step.status === "error" && "bg-red-500/10",
         )}>
           <Icon className={cn(
             "w-5 h-5",
-            step.status === "processing" && "text-[#f46902]",
-            step.status === "completed" && "text-[#033c67]",
+            step.status === "processing" && "text-[#033c67] dark:text-[#5b9bd5]",
+            step.status === "completed" && "text-emerald-500",
             step.status === "waiting_input" && "text-[#f18a31]",
             step.status === "idle" && "text-muted-foreground",
             step.status === "error" && "text-red-500",
@@ -273,13 +257,13 @@ export function AgentDetail({ step, sessionStatus }: AgentDetailProps) {
         </div>
         <div className="ml-auto shrink-0">
           {step.status === "processing" && (
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold" style={{ backgroundColor: "rgba(244,105,2,0.1)", color: "#f46902" }}>
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold" style={{ backgroundColor: "rgba(3,60,103,0.1)", color: "#033c67" }}>
               <Loader2 className="w-3 h-3 animate-spin" />
               Processing
             </span>
           )}
           {step.status === "completed" && (
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold" style={{ backgroundColor: "rgba(3,60,103,0.1)", color: "#033c67" }}>
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
               <Check className="w-3 h-3" />
               Complete
             </span>
@@ -330,9 +314,9 @@ export function AgentDetail({ step, sessionStatus }: AgentDetailProps) {
           </AnimatePresence>
           {step.status === "processing" && (
             <div className="flex items-center gap-1.5 pt-3 pl-[76px]">
-              <div className="w-1.5 h-1.5 rounded-full animate-typing-dot" style={{ backgroundColor: "#f46902" }} />
-              <div className="w-1.5 h-1.5 rounded-full animate-typing-dot" style={{ backgroundColor: "#f46902", animationDelay: "0.2s" }} />
-              <div className="w-1.5 h-1.5 rounded-full animate-typing-dot" style={{ backgroundColor: "#f46902", animationDelay: "0.4s" }} />
+              <div className="w-1.5 h-1.5 rounded-full animate-typing-dot" style={{ backgroundColor: "#033c67" }} />
+              <div className="w-1.5 h-1.5 rounded-full animate-typing-dot" style={{ backgroundColor: "#033c67", animationDelay: "0.2s" }} />
+              <div className="w-1.5 h-1.5 rounded-full animate-typing-dot" style={{ backgroundColor: "#033c67", animationDelay: "0.4s" }} />
             </div>
           )}
           {step.logs.length === 0 && step.status === "idle" && (
@@ -347,11 +331,11 @@ export function AgentDetail({ step, sessionStatus }: AgentDetailProps) {
         <motion.div
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mt-3 rounded-xl border p-3.5" style={{ borderColor: "rgba(3,60,103,0.2)", backgroundColor: "rgba(3,60,103,0.03)" }}
+          className="mt-3 rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-3.5"
         >
           <div className="flex items-center gap-2 mb-2">
-            <FileOutput className="w-3.5 h-3.5" style={{ color: "#033c67" }} />
-            <span className="text-xs font-semibold" style={{ color: "#033c67" }}>Artifact Generated</span>
+            <FileOutput className="w-3.5 h-3.5 text-emerald-500" />
+            <span className="text-xs font-semibold text-emerald-500">Artifact Generated</span>
           </div>
           <pre className="text-[10px] font-mono text-muted-foreground/70 overflow-x-auto max-h-[120px] overflow-y-auto">
             {JSON.stringify(step.artifact, null, 2)}

@@ -92,7 +92,7 @@ export default {
         sans: ["Inter", "var(--font-sans)", "sans-serif"],
         serif: ["var(--font-serif)"],
         mono: ["JetBrains Mono", "var(--font-mono)", "monospace"],
-        display: ["Space Grotesk", "Inter", "sans-serif"],
+        display: ["Orbitron", "Space Grotesk", "sans-serif"],
         brand: ["Galindo", "Space Grotesk", "sans-serif"],
       },
       keyframes: {

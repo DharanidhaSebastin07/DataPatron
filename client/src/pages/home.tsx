@@ -133,8 +133,8 @@ function WelcomeView({ onStart }: { onStart: (intent: string) => void }) {
             <Layers className="w-4.5 h-4.5 text-white" />
           </div>
           <div>
-            <h1 className="text-sm font-brand font-bold tracking-tight" style={{ color: "#033c67" }} data-testid="text-brand">DataPatron</h1>
-            <p className="text-[10px] font-brand uppercase tracking-widest" style={{ color: "#f46902" }}>Data Pipeline Platform</p>
+            <h1 className="text-sm font-display font-semibold" style={{ color: "#033c67", letterSpacing: "0.18em" }} data-testid="text-brand">DataPatron</h1>
+            <p className="text-[10px] font-brand" style={{ color: "#f46902" }}>Data Pipeline Platform</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -155,13 +155,13 @@ function WelcomeView({ onStart }: { onStart: (intent: string) => void }) {
             <span className="text-xs font-medium text-primary">AI-Powered Pipeline Automation</span>
           </div>
 
-          <h2 className="text-4xl md:text-5xl font-display font-bold tracking-tight mb-4 leading-tight" data-testid="text-heading">
-            Ingest data into{" "}
-            <span className="bg-gradient-to-r from-[#f46902] via-[#f18a31] to-[#033c67] bg-clip-text text-transparent">
-              Databricks Delta
-            </span>
+          <h2 className="font-display font-bold mb-2 leading-tight" style={{ fontSize: "2rem", letterSpacing: "0.15em", color: "#033c67" }} data-testid="text-heading">
+            DataPatron
           </h2>
-          <p className="text-base text-muted-foreground max-w-lg mx-auto mb-10 leading-relaxed" data-testid="text-description">
+          <p className="text-lg font-brand mb-2" style={{ color: "#f46902" }} data-testid="text-slogan">
+            Data Pipeline Platform
+          </p>
+          <p className="text-sm text-muted-foreground max-w-md mx-auto mb-10 leading-relaxed" data-testid="text-description">
             Describe your data sources in plain English. Our 8 AI agents handle the rest — from parsing your intent to generating migration plans.
           </p>
 
@@ -243,9 +243,13 @@ function PipelineView({ session, onNewPipeline }: {
           <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ backgroundColor: "#f18a31" }}>
             <Layers className="w-3.5 h-3.5 text-white" />
           </div>
-          <div>
-            <h1 className="text-sm font-brand font-bold tracking-tight" style={{ color: "#033c67" }}>DataPatron</h1>
-            <p className="text-[10px] font-brand" style={{ color: "#f46902" }}>Session {session.id}</p>
+          <div className="flex items-center gap-3">
+            <div>
+              <h1 className="text-sm font-display font-semibold" style={{ color: "#033c67", letterSpacing: "0.18em" }}>DataPatron</h1>
+              <p className="text-[10px] font-brand" style={{ color: "#f46902" }}>Data Pipeline Platform</p>
+            </div>
+            <div className="h-5 w-px bg-border/40" />
+            <span className="text-[10px] font-mono text-muted-foreground/50" data-testid="text-session-id">ID: {session.id}</span>
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -269,10 +273,10 @@ function PipelineView({ session, onNewPipeline }: {
           className="flex-1 flex items-center justify-center p-8"
         >
           <div className="text-center max-w-md">
-            <div className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg" style={{ background: "linear-gradient(135deg, #f46902, #f18a31)" }}>
+            <div className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg bg-emerald-500">
               <CheckCircle2 className="w-8 h-8 text-white" />
             </div>
-            <h2 className="text-2xl font-display font-bold mb-2" style={{ color: "#033c67" }} data-testid="text-pipeline-complete">Pipeline Complete</h2>
+            <h2 className="text-2xl font-display font-bold mb-2" style={{ color: "#033c67", letterSpacing: "0.1em" }} data-testid="text-pipeline-complete">Pipeline Complete</h2>
             <p className="text-sm text-muted-foreground mb-6 leading-relaxed">
               All 8 agents have finished processing. Your migration plan is ready for execution against Databricks.
             </p>
@@ -300,7 +304,7 @@ function PipelineView({ session, onNewPipeline }: {
                 </div>
                 <div className="flex justify-between gap-2 text-sm">
                   <span className="text-muted-foreground">Agents Completed</span>
-                  <span className="font-mono font-semibold" style={{ color: "#033c67" }}>8/8</span>
+                  <span className="font-mono font-semibold text-emerald-500">8/8</span>
                 </div>
                 <div className="flex justify-between gap-2 text-sm">
                   <span className="text-muted-foreground">Status</span>

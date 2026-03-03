@@ -33,14 +33,14 @@ import {
 } from "lucide-react";
 
 const AGENT_PREVIEWS = [
-  { icon: Brain, label: "Parse Intent", color: "#f46902" },
-  { icon: KeyRound, label: "Credentials", color: "#f18a31" },
-  { icon: ShieldCheck, label: "Validate", color: "#033c67" },
-  { icon: Database, label: "Metadata", color: "#0e5a8a" },
-  { icon: GitBranch, label: "Strategy", color: "#f46902" },
-  { icon: TableProperties, label: "Schema", color: "#033c67" },
-  { icon: Table2, label: "Tables", color: "#f18a31" },
-  { icon: FileOutput, label: "Migrate", color: "#0e5a8a" },
+  { icon: Brain, label: "Master Control Agent", color: "#f46902" },
+  { icon: KeyRound, label: "Credentials Agent", color: "#f18a31" },
+  { icon: ShieldCheck, label: "Validation Agent", color: "#033c67" },
+  { icon: Database, label: "Metadata Agent", color: "#0e5a8a" },
+  { icon: GitBranch, label: "Strategy Agent", color: "#f46902" },
+  { icon: TableProperties, label: "Schema Mapping", color: "#033c67" },
+  { icon: Table2, label: "Table Creation", color: "#f18a31" },
+  { icon: FileOutput, label: "Migration Plan", color: "#0e5a8a" },
 ];
 
 function GridBackground() {
@@ -194,20 +194,20 @@ function WelcomeView({ onStart }: { onStart: (intent: string) => void }) {
             transition={{ delay: 0.3, duration: 0.5 }}
             className="mt-16"
           >
-            <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground/40 font-semibold mb-4">8 Intelligent Agents</p>
-            <div className="flex items-center justify-center gap-4 flex-wrap">
+            <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground/40 font-semibold mb-5">8 Intelligent Agents</p>
+            <div className="grid grid-cols-4 gap-2.5 max-w-xl mx-auto">
               {AGENT_PREVIEWS.map((agent, i) => (
                 <motion.div
                   key={agent.label}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.4 + i * 0.06 }}
-                  className="flex flex-col items-center gap-1.5"
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.4 + i * 0.05 }}
+                  className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl bg-card/50 border border-border/20 backdrop-blur-sm hover-elevate"
                 >
-                  <div className="w-10 h-10 rounded-lg bg-card/60 border border-border/30 flex items-center justify-center hover-elevate">
-                    <agent.icon className="w-4.5 h-4.5" style={{ color: agent.color }} />
+                  <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style={{ backgroundColor: `${agent.color}15` }}>
+                    <agent.icon className="w-4 h-4" style={{ color: agent.color }} />
                   </div>
-                  <span className="text-[10px] text-muted-foreground/50 font-medium">{agent.label}</span>
+                  <span className="text-[10px] font-semibold text-muted-foreground/70 leading-tight">{agent.label}</span>
                 </motion.div>
               ))}
             </div>
@@ -269,10 +269,10 @@ function PipelineView({ session, onNewPipeline }: {
           className="flex-1 flex items-center justify-center p-8"
         >
           <div className="text-center max-w-md">
-            <div className="w-16 h-16 rounded-full bg-emerald-500/10 border-2 border-emerald-500/50 flex items-center justify-center mx-auto mb-6">
-              <CheckCircle2 className="w-8 h-8 text-emerald-500" />
+            <div className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg" style={{ background: "linear-gradient(135deg, #f46902, #f18a31)" }}>
+              <CheckCircle2 className="w-8 h-8 text-white" />
             </div>
-            <h2 className="text-2xl font-display font-bold mb-2" data-testid="text-pipeline-complete">Pipeline Complete</h2>
+            <h2 className="text-2xl font-display font-bold mb-2" style={{ color: "#033c67" }} data-testid="text-pipeline-complete">Pipeline Complete</h2>
             <p className="text-sm text-muted-foreground mb-6 leading-relaxed">
               All 8 agents have finished processing. Your migration plan is ready for execution against Databricks.
             </p>
@@ -287,24 +287,24 @@ function PipelineView({ session, onNewPipeline }: {
               </Button>
             </div>
 
-            <div className="mt-8 rounded-lg border border-border/40 bg-card/30 p-4 text-left" data-testid="pipeline-summary">
-              <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">Pipeline Summary</h3>
-              <div className="space-y-2">
+            <div className="mt-8 rounded-xl border border-border/30 bg-card/40 backdrop-blur-sm p-5 text-left shadow-sm" data-testid="pipeline-summary">
+              <h3 className="text-xs font-semibold uppercase tracking-wider mb-4" style={{ color: "#033c67" }}>Pipeline Summary</h3>
+              <div className="space-y-3">
                 <div className="flex justify-between gap-2 text-sm">
                   <span className="text-muted-foreground">Source Type</span>
-                  <span className="font-mono font-medium">{session.sourceType}</span>
+                  <span className="font-mono font-semibold">{session.sourceType}</span>
                 </div>
                 <div className="flex justify-between gap-2 text-sm">
                   <span className="text-muted-foreground">Tables Processed</span>
-                  <span className="font-mono font-medium">{session.tables.length}</span>
+                  <span className="font-mono font-semibold">{session.tables.length}</span>
                 </div>
                 <div className="flex justify-between gap-2 text-sm">
                   <span className="text-muted-foreground">Agents Completed</span>
-                  <span className="font-mono font-medium text-emerald-500">8/8</span>
+                  <span className="font-mono font-semibold" style={{ color: "#033c67" }}>8/8</span>
                 </div>
                 <div className="flex justify-between gap-2 text-sm">
                   <span className="text-muted-foreground">Status</span>
-                  <span className="font-mono font-medium text-emerald-500">Ready for Execution</span>
+                  <span className="font-mono font-semibold" style={{ color: "#f46902" }}>Ready for Execution</span>
                 </div>
               </div>
             </div>

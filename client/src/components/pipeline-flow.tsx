@@ -17,6 +17,7 @@ import {
   CircleCheck,
   TriangleAlert,
   CircleX,
+  ChevronRight,
 } from "lucide-react";
 
 const STEP_ICONS: Record<number, typeof Brain> = {
@@ -30,105 +31,120 @@ const STEP_ICONS: Record<number, typeof Brain> = {
   8: FileOutput,
 };
 
-function StatusIndicator({ status }: { status: StepStatus }) {
-  if (status === "completed") {
-    return (
-      <div className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-emerald-500 flex items-center justify-center" data-testid="status-completed">
-        <Check className="w-3 h-3 text-white" />
-      </div>
-    );
-  }
-  if (status === "error") {
-    return (
-      <div className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-red-500 flex items-center justify-center" data-testid="status-error">
-        <AlertCircle className="w-3 h-3 text-white" />
-      </div>
-    );
-  }
-  if (status === "waiting_input") {
-    return (
-      <div className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-amber-500 flex items-center justify-center animate-glow-pulse" data-testid="status-waiting">
-        <Clock className="w-3 h-3 text-white" />
-      </div>
-    );
-  }
-  return null;
-}
+const STEP_COLORS: Record<number, string> = {
+  1: "#f46902",
+  2: "#f18a31",
+  3: "#033c67",
+  4: "#0e5a8a",
+  5: "#f46902",
+  6: "#033c67",
+  7: "#f18a31",
+  8: "#0e5a8a",
+};
 
-function ConnectionLine({ fromStatus, toStatus }: { fromStatus: StepStatus; toStatus: StepStatus }) {
-  const isActive = fromStatus === "completed" && (toStatus === "processing" || toStatus === "completed" || toStatus === "waiting_input");
-  const isComplete = fromStatus === "completed" && toStatus === "completed";
-  const isFlowing = fromStatus === "completed" && toStatus === "processing";
-
-  return (
-    <div className="flex-1 flex items-center relative min-w-[24px] max-w-[48px]">
-      <div className={cn(
-        "w-full h-[2px] rounded-full transition-all duration-700",
-        isComplete ? "bg-emerald-500/60" : isActive ? "bg-primary/40" : "bg-muted-foreground/10"
-      )} />
-      {isFlowing && (
-        <div className="absolute inset-0 flex items-center">
-          <div className="absolute w-3 h-[2px] rounded-full bg-primary animate-flow-dot" />
-        </div>
-      )}
-    </div>
-  );
-}
-
-interface AgentNodeProps {
+interface AgentCardProps {
   step: AgentStep;
   isActive: boolean;
   index: number;
+  total: number;
 }
 
-function AgentNode({ step, isActive, index }: AgentNodeProps) {
+function AgentCard({ step, isActive, index }: AgentCardProps) {
   const Icon = STEP_ICONS[step.id] || Brain;
   const status = step.status;
+  const accentColor = STEP_COLORS[step.id] || "#f46902";
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 10 }}
+      initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.06, duration: 0.3 }}
-      className="flex flex-col items-center gap-1.5 relative"
+      transition={{ delay: index * 0.05, duration: 0.3 }}
+      className={cn(
+        "relative flex items-center gap-2.5 px-3 py-2 rounded-lg border transition-all duration-400 min-w-0",
+        status === "idle" && "border-border/30 bg-card/30 opacity-50",
+        status === "processing" && "border-primary/50 bg-primary/5 shadow-md",
+        status === "completed" && "border-emerald-500/30 bg-emerald-500/5",
+        status === "error" && "border-red-500/40 bg-red-500/5",
+        status === "waiting_input" && "border-amber-500/40 bg-amber-500/5",
+        isActive && status === "processing" && "ring-1 ring-primary/30",
+      )}
       data-testid={`agent-node-${step.id}`}
     >
+      {status === "processing" && (
+        <motion.div
+          className="absolute inset-0 rounded-lg opacity-20"
+          style={{ background: `linear-gradient(90deg, transparent, ${accentColor}, transparent)` }}
+          animate={{ opacity: [0.05, 0.15, 0.05] }}
+          transition={{ duration: 2, repeat: Infinity }}
+        />
+      )}
+
       <div className={cn(
-        "relative w-11 h-11 rounded-full flex items-center justify-center border-2 transition-all duration-500",
-        status === "idle" && "border-muted-foreground/15 bg-muted/30",
-        status === "processing" && "border-primary bg-primary/10",
-        status === "completed" && "border-emerald-500/70 bg-emerald-500/10",
-        status === "error" && "border-red-500 bg-red-500/10",
-        status === "waiting_input" && "border-amber-500/70 bg-amber-500/10",
-        isActive && "ring-2 ring-primary/20 ring-offset-2 ring-offset-background",
+        "relative w-8 h-8 rounded-md flex items-center justify-center shrink-0 transition-all duration-300",
+        status === "idle" && "bg-muted/50",
+        status === "processing" && "bg-primary/15",
+        status === "completed" && "bg-emerald-500/15",
+        status === "error" && "bg-red-500/15",
+        status === "waiting_input" && "bg-amber-500/15",
       )}>
-        {status === "processing" && (
-          <div className="absolute inset-0 rounded-full border-2 border-transparent border-t-primary animate-agent-ring" />
-        )}
         {status === "processing" ? (
-          <Loader2 className="w-4.5 h-4.5 text-primary animate-spin" />
+          <Loader2 className="w-4 h-4 text-primary animate-spin" />
+        ) : status === "completed" ? (
+          <Check className="w-4 h-4 text-emerald-500" />
+        ) : status === "error" ? (
+          <AlertCircle className="w-4 h-4 text-red-500" />
+        ) : status === "waiting_input" ? (
+          <Clock className="w-4 h-4 text-amber-500 animate-pulse" />
         ) : (
-          <Icon className={cn(
-            "w-4.5 h-4.5 transition-colors duration-300",
-            status === "idle" && "text-muted-foreground/40",
-            status === "completed" && "text-emerald-500",
-            status === "error" && "text-red-500",
-            status === "waiting_input" && "text-amber-500",
-          )} />
+          <Icon className="w-4 h-4 text-muted-foreground/40" />
         )}
-        <StatusIndicator status={status} />
       </div>
-      <span className={cn(
-        "text-[10px] font-semibold tracking-wide uppercase transition-colors duration-300",
-        status === "idle" && "text-muted-foreground/40",
-        status === "processing" && "text-primary",
-        status === "completed" && "text-emerald-500/80",
-        status === "error" && "text-red-500/80",
-        status === "waiting_input" && "text-amber-500/80",
-      )}>
-        {step.shortName}
-      </span>
+
+      <div className="min-w-0 flex-1">
+        <div className={cn(
+          "text-[11px] font-semibold truncate transition-colors duration-300",
+          status === "idle" && "text-muted-foreground/50",
+          status === "processing" && "text-primary",
+          status === "completed" && "text-emerald-600 dark:text-emerald-400",
+          status === "error" && "text-red-500",
+          status === "waiting_input" && "text-amber-600 dark:text-amber-400",
+        )}>
+          {step.shortName}
+        </div>
+        <div className="text-[9px] text-muted-foreground/50 truncate">
+          {status === "processing" ? "Running..." :
+           status === "completed" ? "Done" :
+           status === "waiting_input" ? "Input needed" :
+           status === "error" ? "Failed" :
+           `Step ${step.id}`}
+        </div>
+      </div>
     </motion.div>
+  );
+}
+
+function StepConnector({ fromStatus, toStatus }: { fromStatus: StepStatus; toStatus: StepStatus }) {
+  const isActive = fromStatus === "completed" && (toStatus === "processing" || toStatus === "completed" || toStatus === "waiting_input");
+  const isFlowing = fromStatus === "completed" && toStatus === "processing";
+
+  return (
+    <div className="flex items-center shrink-0 w-5">
+      <div className="relative w-full flex items-center justify-center">
+        <ChevronRight className={cn(
+          "w-3.5 h-3.5 transition-colors duration-500",
+          isActive ? "text-emerald-500/60" : "text-muted-foreground/15"
+        )} />
+        {isFlowing && (
+          <motion.div
+            className="absolute inset-0 flex items-center justify-center"
+            animate={{ opacity: [0.3, 1, 0.3] }}
+            transition={{ duration: 1, repeat: Infinity }}
+          >
+            <ChevronRight className="w-3.5 h-3.5 text-primary" />
+          </motion.div>
+        )}
+      </div>
+    </div>
   );
 }
 
@@ -145,13 +161,14 @@ export function PipelineFlow({ steps, currentStep }: PipelineFlowProps) {
     <div className="w-full" data-testid="pipeline-flow">
       <div className="flex items-center justify-between mb-3 px-1">
         <div className="flex items-center gap-2">
-          <span className="text-xs font-medium text-muted-foreground">Pipeline Progress</span>
+          <span className="text-xs font-semibold" style={{ color: "#033c67" }}>Pipeline Progress</span>
           <span className="text-xs font-mono text-primary">{completedCount}/{steps.length}</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-24 h-1.5 rounded-full bg-muted overflow-hidden">
+          <div className="w-32 h-2 rounded-full bg-muted overflow-hidden">
             <motion.div
-              className="h-full rounded-full bg-gradient-to-r from-primary to-emerald-500"
+              className="h-full rounded-full"
+              style={{ background: "linear-gradient(90deg, #f46902, #f18a31, #22c55e)" }}
               initial={{ width: 0 }}
               animate={{ width: `${progress}%` }}
               transition={{ duration: 0.5 }}
@@ -161,21 +178,22 @@ export function PipelineFlow({ steps, currentStep }: PipelineFlowProps) {
         </div>
       </div>
 
-      <div className="flex items-start justify-center gap-0 px-2">
+      <div className="flex items-center gap-0 overflow-x-auto pb-1">
         {steps.map((step, i) => (
-          <div key={step.id} className="flex items-start">
-            <AgentNode
-              step={step}
-              isActive={step.id === currentStep}
-              index={i}
-            />
+          <div key={step.id} className="flex items-center min-w-0">
+            <div className="min-w-[110px] max-w-[140px]">
+              <AgentCard
+                step={step}
+                isActive={step.id === currentStep}
+                index={i}
+                total={steps.length}
+              />
+            </div>
             {i < steps.length - 1 && (
-              <div className="mt-5 px-0.5">
-                <ConnectionLine
-                  fromStatus={step.status}
-                  toStatus={steps[i + 1].status}
-                />
-              </div>
+              <StepConnector
+                fromStatus={step.status}
+                toStatus={steps[i + 1].status}
+              />
             )}
           </div>
         ))}

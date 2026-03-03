@@ -33,14 +33,14 @@ import {
 } from "lucide-react";
 
 const AGENT_PREVIEWS = [
-  { icon: Brain, label: "Parse Intent", color: "text-orange-400" },
-  { icon: KeyRound, label: "Credentials", color: "text-amber-400" },
-  { icon: ShieldCheck, label: "Validate", color: "text-blue-400" },
-  { icon: Database, label: "Metadata", color: "text-sky-400" },
-  { icon: GitBranch, label: "Strategy", color: "text-orange-300" },
-  { icon: TableProperties, label: "Schema", color: "text-blue-300" },
-  { icon: Table2, label: "Tables", color: "text-amber-300" },
-  { icon: FileOutput, label: "Migrate", color: "text-blue-400" },
+  { icon: Brain, label: "Parse Intent", color: "#f46902" },
+  { icon: KeyRound, label: "Credentials", color: "#f18a31" },
+  { icon: ShieldCheck, label: "Validate", color: "#033c67" },
+  { icon: Database, label: "Metadata", color: "#0e5a8a" },
+  { icon: GitBranch, label: "Strategy", color: "#f46902" },
+  { icon: TableProperties, label: "Schema", color: "#033c67" },
+  { icon: Table2, label: "Tables", color: "#f18a31" },
+  { icon: FileOutput, label: "Migrate", color: "#0e5a8a" },
 ];
 
 function GridBackground() {
@@ -53,8 +53,8 @@ function GridBackground() {
           backgroundSize: "60px 60px",
         }}
       />
-      <div className="absolute top-1/4 left-1/3 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-primary/5 blur-[120px]" />
-      <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] rounded-full bg-blue-800/5 blur-[100px]" />
+      <div className="absolute top-1/4 left-1/3 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full blur-[120px]" style={{ backgroundColor: "rgba(244,105,2,0.04)" }} />
+      <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] rounded-full blur-[100px]" style={{ backgroundColor: "rgba(3,60,103,0.04)" }} />
     </div>
   );
 }
@@ -129,12 +129,12 @@ function WelcomeView({ onStart }: { onStart: (intent: string) => void }) {
 
       <header className="relative z-10 flex items-center justify-between gap-2 px-6 py-4">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-orange-500 to-blue-800 flex items-center justify-center">
+          <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ backgroundColor: "#f18a31" }}>
             <Layers className="w-4.5 h-4.5 text-white" />
           </div>
           <div>
-            <h1 className="text-sm font-display font-bold tracking-tight" data-testid="text-brand">DataPatron</h1>
-            <p className="text-[10px] text-muted-foreground font-mono uppercase tracking-widest">Data Pipeline Platform</p>
+            <h1 className="text-sm font-brand font-bold tracking-tight" style={{ color: "#033c67" }} data-testid="text-brand">DataPatron</h1>
+            <p className="text-[10px] font-brand uppercase tracking-widest" style={{ color: "#f46902" }}>Data Pipeline Platform</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -157,7 +157,7 @@ function WelcomeView({ onStart }: { onStart: (intent: string) => void }) {
 
           <h2 className="text-4xl md:text-5xl font-display font-bold tracking-tight mb-4 leading-tight" data-testid="text-heading">
             Ingest data into{" "}
-            <span className="bg-gradient-to-r from-orange-500 via-amber-400 to-blue-700 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-[#f46902] via-[#f18a31] to-[#033c67] bg-clip-text text-transparent">
               Databricks Delta
             </span>
           </h2>
@@ -205,7 +205,7 @@ function WelcomeView({ onStart }: { onStart: (intent: string) => void }) {
                   className="flex flex-col items-center gap-1.5"
                 >
                   <div className="w-10 h-10 rounded-lg bg-card/60 border border-border/30 flex items-center justify-center hover-elevate">
-                    <agent.icon className={`w-4.5 h-4.5 ${agent.color}`} />
+                    <agent.icon className="w-4.5 h-4.5" style={{ color: agent.color }} />
                   </div>
                   <span className="text-[10px] text-muted-foreground/50 font-medium">{agent.label}</span>
                 </motion.div>
@@ -240,12 +240,12 @@ function PipelineView({ session, onNewPipeline }: {
     <div className="h-screen flex flex-col bg-background">
       <header className="flex items-center justify-between gap-2 px-5 py-3 border-b border-border/30 shrink-0">
         <div className="flex items-center gap-3">
-          <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-orange-500 to-blue-800 flex items-center justify-center">
+          <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ backgroundColor: "#f18a31" }}>
             <Layers className="w-3.5 h-3.5 text-white" />
           </div>
           <div>
-            <h1 className="text-sm font-display font-bold tracking-tight">DataPatron</h1>
-            <p className="text-[10px] text-muted-foreground font-mono">Session {session.id}</p>
+            <h1 className="text-sm font-brand font-bold tracking-tight" style={{ color: "#033c67" }}>DataPatron</h1>
+            <p className="text-[10px] font-brand" style={{ color: "#f46902" }}>Session {session.id}</p>
           </div>
         </div>
         <div className="flex items-center gap-2">

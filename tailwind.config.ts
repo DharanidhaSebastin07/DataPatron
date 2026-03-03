@@ -93,6 +93,7 @@ export default {
         serif: ["var(--font-serif)"],
         mono: ["JetBrains Mono", "var(--font-mono)", "monospace"],
         display: ["Space Grotesk", "Inter", "sans-serif"],
+        brand: ["Galindo", "Space Grotesk", "sans-serif"],
       },
       keyframes: {
         "accordion-down": {

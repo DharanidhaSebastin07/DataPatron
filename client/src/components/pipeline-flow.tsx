@@ -1,3 +1,4 @@
+import React from "react";
 import { type AgentStep, type StepStatus } from "@shared/schema";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
@@ -72,7 +73,7 @@ function ConnectionLine({ fromStatus, toStatus }: { fromStatus: StepStatus; toSt
   const isFlowing = fromStatus === "completed" && toStatus === "processing";
 
   return (
-    <div className="flex-1 flex items-center relative min-w-[20px] max-w-[40px]">
+    <div className="flex-1 flex items-center relative min-w-[30px]">
       <div className={cn(
         "w-full h-[2px] rounded-full transition-all duration-700",
         isComplete ? "bg-emerald-500/60" : isActive ? "bg-[#033c67]/40" : "bg-muted-foreground/10"
@@ -81,7 +82,7 @@ function ConnectionLine({ fromStatus, toStatus }: { fromStatus: StepStatus; toSt
         <div className="absolute inset-0 flex items-center">
           <motion.div
             className="absolute w-3 h-[2px] rounded-full"
-            style={{ backgroundColor: "#033c67" }}
+            style={{ backgroundColor: "#f46902" }} // brand orange
             animate={{ left: ["0%", "100%"] }}
             transition={{ duration: 1.2, repeat: Infinity, ease: "linear" }}
           />
@@ -100,63 +101,50 @@ interface AgentNodeProps {
 function AgentNode({ step, isActive, index }: AgentNodeProps) {
   const Icon = STEP_ICONS[step.id] || Brain;
   const status = step.status;
-  const fullName = STEP_FULL_NAMES[step.id] || step.name;
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.06, duration: 0.3 }}
-      className="flex flex-col items-center gap-1.5 relative"
+      initial={{ opacity: 0, scale: 0.9 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ delay: index * 0.05, duration: 0.2 }}
+      className="flex flex-col items-center gap-4 relative shrink-0"
       data-testid={`agent-node-${step.id}`}
     >
       <div className={cn(
-        "relative w-11 h-11 rounded-full flex items-center justify-center border-2 transition-all duration-500",
-        status === "idle" && "border-muted-foreground/15 bg-muted/30",
-        status === "processing" && "border-[#033c67] bg-[#033c67]/10",
-        status === "completed" && "border-emerald-500/70 bg-emerald-500/10",
-        status === "error" && "border-red-500 bg-red-500/10",
-        status === "waiting_input" && "border-[#f18a31]/70 bg-[#f18a31]/10",
-        isActive && "ring-2 ring-[#033c67]/20 ring-offset-2 ring-offset-background",
+        "relative w-11 h-11 rounded-full flex items-center justify-center border-2 transition-all duration-500 bg-background",
+        status === "idle" && "border-muted-foreground/15",
+        status === "processing" && "border-[#033c67] bg-[#033c67]/5",
+        status === "completed" && "border-emerald-500/70 bg-emerald-500/5",
+        status === "error" && "border-red-500 bg-red-500/5",
+        status === "waiting_input" && "border-primary/70 bg-primary/5",
+        isActive && "ring-2 ring-[#033c67]/20 ring-offset-2",
       )}>
         {status === "processing" && (
-          <div className="absolute inset-0 rounded-full border-2 border-transparent border-t-[#033c67] animate-agent-ring" />
+          <div className="absolute inset-0 rounded-full border-2 border-transparent border-t-[#033c67] animate-spin" />
         )}
         {status === "processing" ? (
-          <Loader2 className="w-4.5 h-4.5 animate-spin" style={{ color: "#033c67" }} />
+          <Loader2 className="w-4.5 h-4.5 animate-spin text-[#033c67]" />
         ) : (
           <Icon className={cn(
             "w-4.5 h-4.5 transition-colors duration-300",
             status === "idle" && "text-muted-foreground/40",
             status === "completed" && "text-emerald-500",
             status === "error" && "text-red-500",
-            status === "waiting_input" && "text-[#f18a31]",
+            status === "waiting_input" && "text-primary",
           )} />
         )}
         <StatusIndicator status={status} />
       </div>
-      <div className="flex flex-col items-center gap-0.5">
-        <span className={cn(
-          "text-[10px] font-bold tracking-wide uppercase transition-colors duration-300",
-          status === "idle" && "text-muted-foreground/40",
-          status === "processing" && "text-[#033c67] dark:text-[#5b9bd5]",
-          status === "completed" && "text-emerald-500/80",
-          status === "error" && "text-red-500/80",
-          status === "waiting_input" && "text-[#f18a31]/80",
-        )}>
-          {step.shortName}
-        </span>
-        <span className={cn(
-          "text-[8px] max-w-[70px] text-center leading-tight transition-colors duration-300",
-          status === "idle" && "text-muted-foreground/30",
-          status === "processing" && "text-[#033c67]/60 dark:text-[#5b9bd5]/60",
-          status === "completed" && "text-emerald-500/50",
-          status === "error" && "text-red-400/50",
-          status === "waiting_input" && "text-[#f18a31]/50",
-        )}>
-          {fullName}
-        </span>
-      </div>
+      <span className={cn(
+        "text-[10px] font-bold tracking-tight transition-colors duration-300 max-w-[80px] text-center leading-[1.2]",
+        status === "idle" && "text-muted-foreground/40",
+        status === "processing" && "text-[#033c67]",
+        status === "completed" && "text-emerald-500",
+        status === "error" && "text-red-500",
+        status === "waiting_input" && "text-primary/70",
+      )}>
+        {step.name}
+      </span>
     </motion.div>
   );
 }
@@ -172,16 +160,18 @@ export function PipelineFlow({ steps, currentStep }: PipelineFlowProps) {
 
   return (
     <div className="w-full" data-testid="pipeline-flow">
-      <div className="flex items-center justify-between mb-3 px-1">
+      <div className="flex items-center justify-between mb-4 px-2">
         <div className="flex items-center gap-2">
-          <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: "#033c67" }}>Pipeline Progress</span>
-          <span className="text-xs font-mono" style={{ color: "#f46902" }}>{completedCount}/{steps.length}</span>
+          <span className="text-xs font-bold uppercase tracking-widest text-primary">
+            {progress === 100 ? "pipeline completed" : "Master Pipeline"}
+          </span>
+          <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-primary/10 text-primary font-mono">{completedCount}/{steps.length}</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-24 h-1.5 rounded-full bg-muted overflow-hidden">
+          <div className="w-32 h-1.5 rounded-full bg-muted overflow-hidden border border-border/50">
             <motion.div
               className="h-full rounded-full"
-              style={{ background: progress === 100 ? "linear-gradient(90deg, #22c55e, #16a34a)" : "linear-gradient(90deg, #033c67, #0e5a8a)" }}
+              style={{ background: progress === 100 ? "linear-gradient(90deg, #22c55e, #16a34a)" : "linear-gradient(90deg, #033c67, #f46902)" }}
               initial={{ width: 0 }}
               animate={{ width: `${progress}%` }}
               transition={{ duration: 0.5 }}
@@ -191,23 +181,23 @@ export function PipelineFlow({ steps, currentStep }: PipelineFlowProps) {
         </div>
       </div>
 
-      <div className="flex items-start justify-center gap-0 px-2">
+      <div className="flex items-start justify-between w-full px-2">
         {steps.map((step, i) => (
-          <div key={step.id} className="flex items-start">
+          <React.Fragment key={step.id}>
             <AgentNode
               step={step}
               isActive={step.id === currentStep}
               index={i}
             />
             {i < steps.length - 1 && (
-              <div className="mt-5 px-0.5">
+              <div className="flex-1 mt-5 px-1">
                 <ConnectionLine
                   fromStatus={step.status}
                   toStatus={steps[i + 1].status}
                 />
               </div>
             )}
-          </div>
+          </React.Fragment>
         ))}
       </div>
     </div>
@@ -238,15 +228,15 @@ export function AgentDetail({ step, sessionStatus }: AgentDetailProps) {
           "w-10 h-10 rounded-xl flex items-center justify-center",
           step.status === "processing" && "bg-[#033c67]/10",
           step.status === "completed" && "bg-emerald-500/10",
-          step.status === "waiting_input" && "bg-[#f18a31]/10",
+          step.status === "waiting_input" && "bg-primary/10",
           step.status === "idle" && "bg-muted/50",
           step.status === "error" && "bg-red-500/10",
         )}>
           <Icon className={cn(
             "w-5 h-5",
-            step.status === "processing" && "text-[#033c67] dark:text-[#5b9bd5]",
+            step.status === "processing" && "text-[#033c67]",
             step.status === "completed" && "text-emerald-500",
-            step.status === "waiting_input" && "text-[#f18a31]",
+            step.status === "waiting_input" && "text-primary",
             step.status === "idle" && "text-muted-foreground",
             step.status === "error" && "text-red-500",
           )} />
@@ -257,7 +247,7 @@ export function AgentDetail({ step, sessionStatus }: AgentDetailProps) {
         </div>
         <div className="ml-auto shrink-0">
           {step.status === "processing" && (
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold" style={{ backgroundColor: "rgba(3,60,103,0.1)", color: "#033c67" }}>
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-[#033c67]/10 text-[#033c67]">
               <Loader2 className="w-3 h-3 animate-spin" />
               Processing
             </span>
@@ -269,7 +259,7 @@ export function AgentDetail({ step, sessionStatus }: AgentDetailProps) {
             </span>
           )}
           {step.status === "waiting_input" && (
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold" style={{ backgroundColor: "rgba(241,138,49,0.1)", color: "#f18a31" }}>
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-primary/10 text-primary">
               <Clock className="w-3 h-3" />
               Awaiting Input
             </span>
@@ -314,9 +304,9 @@ export function AgentDetail({ step, sessionStatus }: AgentDetailProps) {
           </AnimatePresence>
           {step.status === "processing" && (
             <div className="flex items-center gap-1.5 pt-3 pl-[76px]">
-              <div className="w-1.5 h-1.5 rounded-full animate-typing-dot" style={{ backgroundColor: "#033c67" }} />
-              <div className="w-1.5 h-1.5 rounded-full animate-typing-dot" style={{ backgroundColor: "#033c67", animationDelay: "0.2s" }} />
-              <div className="w-1.5 h-1.5 rounded-full animate-typing-dot" style={{ backgroundColor: "#033c67", animationDelay: "0.4s" }} />
+              <div className="w-1.5 h-1.5 rounded-full animate-typing-dot bg-[#033c67]" />
+              <div className="w-1.5 h-1.5 rounded-full animate-typing-dot bg-[#033c67]" style={{ animationDelay: "0.2s" }} />
+              <div className="w-1.5 h-1.5 rounded-full animate-typing-dot bg-[#033c67]" style={{ animationDelay: "0.4s" }} />
             </div>
           )}
           {step.logs.length === 0 && step.status === "idle" && (

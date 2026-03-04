@@ -1,14 +1,29 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
+import session from "express-session";
 import { storage } from "./storage";
-import { setupAuth, registerAuthRoutes } from "./replit_integrations/auth";
+import { registerLocalAuthRoutes } from "./localAuth";
 
 export async function registerRoutes(
   httpServer: Server,
   app: Express
 ): Promise<Server> {
-  await setupAuth(app);
-  registerAuthRoutes(app);
+  // Session middleware (simple in-memory sessions — fine for local/dev)
+  app.use(
+    session({
+      secret: process.env.SESSION_SECRET || "datapatron-dev-secret-change-in-prod",
+      resave: false,
+      saveUninitialized: false,
+      cookie: {
+        httpOnly: true,
+        secure: false, // set to true when using HTTPS in production
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      },
+    })
+  );
+
+  // Local auth routes (register, login, logout, user)
+  registerLocalAuthRoutes(app);
 
   app.post("/api/sessions", (_req, res) => {
     const session = storage.createSession();

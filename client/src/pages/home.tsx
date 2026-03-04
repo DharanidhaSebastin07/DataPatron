@@ -1,4 +1,5 @@
 import { useState, useCallback } from "react";
+import { useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { type PipelineSession } from "@shared/schema";
@@ -12,7 +13,7 @@ import { motion } from "framer-motion";
 import {
   Play,
   Layers,
-  Sparkles,
+  Bot,
   ArrowRight,
   RotateCcw,
   Moon,
@@ -29,18 +30,19 @@ import {
   CheckCircle2,
   LogOut,
   LogIn,
+  UserX,
   Loader2,
 } from "lucide-react";
 
 const AGENT_PREVIEWS = [
   { icon: Brain, label: "Master Control Agent", color: "#f46902" },
-  { icon: KeyRound, label: "Credentials Agent", color: "#f18a31" },
-  { icon: ShieldCheck, label: "Validation Agent", color: "#033c67" },
-  { icon: Database, label: "Metadata Agent", color: "#0e5a8a" },
+  { icon: KeyRound, label: "Credentials Agent", color: "#033c67" },
+  { icon: ShieldCheck, label: "Validation Agent", color: "#f46902" },
+  { icon: Database, label: "Metadata Agent", color: "#033c67" },
   { icon: GitBranch, label: "Strategy Agent", color: "#f46902" },
   { icon: TableProperties, label: "Schema Mapping", color: "#033c67" },
-  { icon: Table2, label: "Table Creation", color: "#f18a31" },
-  { icon: FileOutput, label: "Migration Plan", color: "#0e5a8a" },
+  { icon: Table2, label: "Table Creation", color: "#f46902" },
+  { icon: FileOutput, label: "Migration Plan", color: "#033c67" },
 ];
 
 function GridBackground() {
@@ -69,7 +71,8 @@ function ThemeToggle() {
 }
 
 function UserMenu() {
-  const { user, isLoading, isAuthenticated, logout } = useAuth();
+  const { user, isLoading, isAuthenticated, isGuest, logout, initials } = useAuth();
+  const [, navigate] = useLocation();
 
   if (isLoading) {
     return (
@@ -79,35 +82,62 @@ function UserMenu() {
     );
   }
 
-  if (!isAuthenticated) {
+  if (!isAuthenticated && !isGuest) {
     return (
-      <Button size="sm" variant="default" onClick={() => window.location.href = "/api/login"} data-testid="button-login">
+      <Button
+        size="sm"
+        className="bg-[#033c67] dark:bg-[#0e5a8a] text-white focus-visible:ring-0 focus-visible:ring-offset-0"
+        onClick={() => navigate("/auth")}
+        data-testid="button-login"
+      >
         <LogIn className="w-3.5 h-3.5 mr-1.5" />
         Sign In
       </Button>
     );
   }
 
+  if (isGuest) {
+    return (
+      <div className="flex items-center gap-2">
+        <div
+          className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold border border-border/40 bg-muted/40 text-muted-foreground"
+          data-testid="badge-guest"
+        >
+          <UserX className="w-3 h-3" />
+          Guest
+        </div>
+        <Button
+          size="sm"
+          className="bg-[#033c67] dark:bg-[#0e5a8a] text-white focus-visible:ring-0 focus-visible:ring-offset-0"
+          onClick={() => navigate("/auth")}
+        >
+          Sign In
+        </Button>
+      </div>
+    );
+  }
+
   return (
     <div className="flex items-center gap-2">
       <div className="flex items-center gap-2">
-        {user?.profileImageUrl ? (
-          <img
-            src={user.profileImageUrl}
-            alt={user.firstName || "User"}
-            className="w-7 h-7 rounded-full border border-border/50 object-cover"
-            data-testid="img-user-avatar"
-          />
-        ) : (
-          <div className="w-7 h-7 rounded-full bg-primary/20 flex items-center justify-center text-xs font-semibold text-primary" data-testid="text-user-initial">
-            {(user?.firstName?.[0] || user?.email?.[0] || "U").toUpperCase()}
-          </div>
-        )}
+        {/* Initials avatar */}
+        <div
+          className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white shadow-sm"
+          style={{ backgroundColor: "#033c67" }}
+          data-testid="avatar-initials"
+        >
+          {initials}
+        </div>
         <span className="text-xs font-medium hidden sm:block" data-testid="text-user-name">
-          {user?.firstName || user?.email || "User"}
+          {user?.firstName}
         </span>
       </div>
-      <Button size="icon" variant="secondary" onClick={() => logout()} data-testid="button-logout">
+      <Button
+        size="icon"
+        variant="secondary"
+        onClick={() => logout()}
+        data-testid="button-logout"
+      >
         <LogOut className="w-3.5 h-3.5" />
       </Button>
     </div>
@@ -150,9 +180,9 @@ function WelcomeView({ onStart }: { onStart: (intent: string) => void }) {
           transition={{ duration: 0.6 }}
           className="w-full max-w-2xl text-center"
         >
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20 mb-6">
-            <Sparkles className="w-3.5 h-3.5 text-primary" />
-            <span className="text-xs font-medium text-primary">AI-Powered Pipeline Automation</span>
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-6">
+            <Bot className="w-5 h-5 text-primary" />
+            <span className="text-sm font-medium text-primary">AI-Powered Pipeline Automation</span>
           </div>
 
           <h2 className="font-display font-bold mb-2 leading-tight" style={{ fontSize: "2rem", letterSpacing: "0.15em", color: "#033c67" }} data-testid="text-heading">
@@ -171,15 +201,16 @@ function WelcomeView({ onStart }: { onStart: (intent: string) => void }) {
                 value={intent}
                 onChange={(e) => setIntent(e.target.value)}
                 placeholder="e.g., Ingest orders and products tables from Azure SQL into Databricks daily..."
-                className="min-h-[100px] resize-none border-0 bg-transparent text-sm focus-visible:ring-0 placeholder:text-muted-foreground/40"
+                className="min-h-[120px] resize-none border-0 bg-transparent text-sm focus-visible:ring-0 placeholder:text-muted-foreground/40"
                 data-testid="input-intent"
               />
-              <div className="flex items-center justify-end gap-2 px-2 pt-1 pb-1 flex-wrap">
+              <div className="flex items-center justify-end gap-2 px-2 pt-3 pb-2 border-t border-border/30 flex-wrap">
                 <Button
                   size="sm"
                   disabled={!intent.trim()}
                   onClick={handleStart}
                   data-testid="button-start-pipeline"
+                  className="bg-[#033c67] dark:bg-[#0e5a8a] text-white hover:bg-[#022d4e] dark:hover:bg-[#0b4a72] focus-visible:ring-0 focus-visible:ring-offset-0 border-0"
                 >
                   Start Pipeline
                   <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
@@ -204,8 +235,8 @@ function WelcomeView({ onStart }: { onStart: (intent: string) => void }) {
                   transition={{ delay: 0.4 + i * 0.05 }}
                   className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl bg-card/50 border border-border/20 backdrop-blur-sm hover-elevate"
                 >
-                  <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style={{ backgroundColor: `${agent.color}15` }}>
-                    <agent.icon className="w-4 h-4" style={{ color: agent.color }} />
+                  <div className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0" style={{ backgroundColor: `${agent.color}15` }}>
+                    <agent.icon className="w-5 h-5" style={{ color: agent.color }} />
                   </div>
                   <span className="text-[10px] font-semibold text-muted-foreground/70 leading-tight">{agent.label}</span>
                 </motion.div>
@@ -276,9 +307,9 @@ function PipelineView({ session, onNewPipeline }: {
             <div className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg bg-emerald-500">
               <CheckCircle2 className="w-8 h-8 text-white" />
             </div>
-            <h2 className="text-2xl font-display font-bold mb-2" style={{ color: "#033c67", letterSpacing: "0.1em" }} data-testid="text-pipeline-complete">Pipeline Complete</h2>
+            <h2 className="text-2xl font-display font-bold mb-2 text-primary tracking-wide" data-testid="text-pipeline-complete">pipeline completed</h2>
             <p className="text-sm text-muted-foreground mb-6 leading-relaxed">
-              All 8 agents have finished processing. Your migration plan is ready for execution against Databricks.
+              All 8 agents have finished processing. Your pipeline is now marked as completed and ready for final review.
             </p>
             <div className="flex items-center justify-center gap-3 flex-wrap">
               <Button data-testid="button-download-plan">

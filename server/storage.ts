@@ -11,86 +11,80 @@ export interface IStorage {
 
 const PROCESSING_LOGS: Record<number, { message: string; level: LogEntry["level"]; delay: number }[]> = {
   1: [
-    { message: "Initializing Master Control Agent...", level: "info", delay: 0 },
-    { message: "Loading LLM for intent parsing...", level: "info", delay: 600 },
-    { message: "Analyzing natural language request...", level: "info", delay: 1400 },
-    { message: "Identifying source systems...", level: "info", delay: 2200 },
-    { message: "Detecting table references...", level: "info", delay: 3000 },
-    { message: "Determining ingestion mode and schedule...", level: "info", delay: 3600 },
-    { message: "Building pipeline skeletons...", level: "info", delay: 4200 },
-    { message: "Validating source type support...", level: "info", delay: 4800 },
-    { message: "Creating one pipeline entry per table...", level: "info", delay: 5400 },
-    { message: "Pipeline plan generated successfully", level: "success", delay: 6000 },
+    { message: "Initializing neural orchestration kernel...", level: "info", delay: 0 },
+    { message: "Parsing user intent vector: [IDENTIFIED]", level: "info", delay: 600 },
+    { message: "Analyzing NL request for semantic constraints...", level: "info", delay: 1400 },
+    { message: "Identifying source engine: Azure SQL (Driver: TDS)", level: "info", delay: 2200 },
+    { message: "Detecting transitive table dependencies...", level: "info", delay: 3000 },
+    { message: "Determining ingestion pattern: [MERGE_OPTIMIZED]", level: "info", delay: 3600 },
+    { message: "Allocating sub-agent instances for parallel node graph...", level: "info", delay: 4200 },
+    { message: "Validating orchestrator resource limits...", level: "info", delay: 4800 },
+    { message: "Pipeline topology established successfully.", level: "success", delay: 5600 },
   ],
   2: [
-    { message: "Loading credential handler module...", level: "info", delay: 0 },
-    { message: "Detecting source type from pipeline plan...", level: "info", delay: 500 },
-    { message: "Source type identified: Azure SQL", level: "info", delay: 1000 },
-    { message: "Preparing credential collection form...", level: "info", delay: 1500 },
-    { message: "Awaiting user credentials...", level: "warning", delay: 2000 },
+    { message: "Establishing secure handshake with HashiCorp Vault...", level: "info", delay: 0 },
+    { message: "Requesting ephemeral read tokens for target endpoint...", level: "info", delay: 500 },
+    { message: "Vault status: ONLINE. TLS 1.3 verify depth: 4", level: "info", delay: 1000 },
+    { message: "Preparing RSA-4096 credential exchange buffer...", level: "info", delay: 1500 },
+    { message: "Awaiting encrypted user credentials...", level: "warning", delay: 2000 },
   ],
   3: [
     { message: "Initializing Connection Validation Agent...", level: "info", delay: 0 },
-    { message: "Loading driver auto-detection module...", level: "info", delay: 600 },
-    { message: "Testing connection to Azure SQL source...", level: "info", delay: 1200 },
-    { message: "Attempting ODBC Driver 18...", level: "info", delay: 2000 },
-    { message: "Driver loaded successfully", level: "success", delay: 2800 },
-    { message: "Establishing secure connection...", level: "info", delay: 3400 },
-    { message: "Connection established", level: "success", delay: 4000 },
-    { message: "Running health check queries...", level: "info", delay: 4600 },
-    { message: "Querying INFORMATION_SCHEMA...", level: "info", delay: 5200 },
-    { message: "Connection validation: PASSED", level: "success", delay: 5800 },
+    { message: "Auto-detecting source network driver (v18.3.1)...", level: "info", delay: 600 },
+    { message: "Pinging source endpoint (p99 latency: 14ms)...", level: "info", delay: 1200 },
+    { message: "Establishing TCP/IP handshake (Handshake ID: 0x4F2A)...", level: "info", delay: 2000 },
+    { message: "Driver bridge initialized successfully.", level: "success", delay: 2800 },
+    { message: "Establishing secure tunnel over port 1433...", level: "info", delay: 3400 },
+    { message: "Encryption context: AES-256-GCM [ACTIVE]", level: "success", delay: 4000 },
+    { message: "Executing source environment health probe...", level: "info", delay: 4600 },
+    { message: "Checking compatibility matrix for Databricks Delta...", level: "info", delay: 5200 },
+    { message: "Validation sequence: TOTAL SUCCESS", level: "success", delay: 5800 },
   ],
   4: [
-    { message: "Initializing Metadata Extraction Agent...", level: "info", delay: 0 },
-    { message: "Connecting to validated source...", level: "info", delay: 700 },
-    { message: "Querying INFORMATION_SCHEMA.TABLES...", level: "info", delay: 1400 },
-    { message: "Discovered tables: orders, products", level: "info", delay: 2200 },
-    { message: "Extracting schema for [orders]...", level: "info", delay: 3000 },
-    { message: "Fetching sample rows: SELECT TOP 5 * FROM orders", level: "info", delay: 3800 },
-    { message: "Extracting schema for [products]...", level: "info", delay: 4600 },
-    { message: "Fetching sample rows: SELECT TOP 5 * FROM products", level: "info", delay: 5200 },
-    { message: "Metadata extraction complete", level: "success", delay: 5800 },
+    { message: "Cloning INFORMATION_SCHEMA from remote host...", level: "info", delay: 0 },
+    { message: "Resolving metadata catalogs for current user context...", level: "info", delay: 700 },
+    { message: "Compiling system table graph (Depth: 2)...", level: "info", delay: 1400 },
+    { message: "Inventory discovered 24 tables, 182 columns.", level: "info", delay: 2200 },
+    { message: "Extracting DDL for primary objects [orders, products]...", level: "info", delay: 3000 },
+    { message: "Heuristic scan for sensitive data (PII detection)...", level: "info", delay: 3800 },
+    { message: "Calculating cardinality estimates (Sample size: 10k)...", level: "info", delay: 4600 },
+    { message: "Object cataloging complete. Generating metadata manifest.", level: "success", delay: 5600 },
   ],
   5: [
-    { message: "Initializing Pipeline Strategy Agent...", level: "info", delay: 0 },
-    { message: "Analyzing metadata for ingestion strategy...", level: "info", delay: 700 },
-    { message: "Scanning columns for watermark candidates...", level: "info", delay: 1400 },
-    { message: "Found watermark column: updated_at (type: datetime)", level: "info", delay: 2200 },
-    { message: "Determining write strategy: incremental + merge", level: "info", delay: 3000 },
-    { message: "Calculating parallelism based on row count...", level: "info", delay: 3800 },
-    { message: "Parallelism set to 4 (< 10,000 rows)", level: "info", delay: 4400 },
-    { message: "Detecting partition columns...", level: "info", delay: 5000 },
-    { message: "Strategy optimization complete", level: "success", delay: 5600 },
+    { message: "Executing strategy cost-optimizer...", level: "info", delay: 0 },
+    { message: "Analyzing data volume for optimal shuffle partitions...", level: "info", delay: 700 },
+    { message: "Candidate watermark detected: [updated_at] (Card: 0.94)", level: "info", delay: 1400 },
+    { message: "Ingestion mode selected: [CDC_WATERMARK_INCREMENTAL]", level: "info", delay: 2200 },
+    { message: "Mapping target delta-lake table partitioning scheme...", level: "info", delay: 3000 },
+    { message: "Calculating Spark resource allocation (Executors: 4)...", level: "info", delay: 3800 },
+    { message: "Optimization goal: [MINIMIZE_SHUFFLE] achieved.", level: "info", delay: 4400 },
+    { message: "Migration DAG compiled for deployment.", level: "success", delay: 5200 },
   ],
   6: [
-    { message: "Initializing Schema Mapping Agent...", level: "info", delay: 0 },
-    { message: "Inferring Databricks Delta column types...", level: "info", delay: 800 },
-    { message: "Mapping: order_id (int) -> BIGINT", level: "info", delay: 1400 },
-    { message: "Mapping: customer_name (str) -> STRING", level: "info", delay: 1800 },
-    { message: "Mapping: order_date (date) -> DATE", level: "info", delay: 2200 },
-    { message: "Mapping: total_amount (float) -> DOUBLE", level: "info", delay: 2600 },
-    { message: "Detecting primary keys...", level: "info", delay: 3200 },
-    { message: "Primary key detected: order_id", level: "info", delay: 3800 },
-    { message: "Adding governance columns: ingestion_ts, source_system", level: "info", delay: 4400 },
-    { message: "Generating CREATE TABLE DDL...", level: "info", delay: 5000 },
-    { message: "Schema mapping complete", level: "success", delay: 5600 },
+    { message: "Synthesizing Delta Lake schema mappings...", level: "info", delay: 0 },
+    { message: "Translating source DDL to Spark SQL v3 protocol...", level: "info", delay: 800 },
+    { message: "Applying naming convention: [AZURE_SQL] -> [SNAKE_CASE]", level: "info", delay: 1400 },
+    { message: "Resolving primary key parity in Unity Catalog...", level: "info", delay: 1800 },
+    { message: "Injecting audit columns (_ingest_ts, _source_checksum)...", level: "info", delay: 2400 },
+    { message: "Verifying binary type compatibility (SQL_BLOB -> VARBINARY)...", level: "info", delay: 3000 },
+    { message: "Constructing target table constraints mapping...", level: "info", delay: 3800 },
+    { message: "Table DDL drafted for all 12 candidate objects.", level: "success", delay: 5000 },
   ],
   7: [
-    { message: "Initializing Table Creation Agent...", level: "info", delay: 0 },
-    { message: "Loading schema definitions...", level: "info", delay: 600 },
-    { message: "Preparing DDL preview for user review...", level: "info", delay: 1200 },
-    { message: "Awaiting user approval for table names...", level: "warning", delay: 1800 },
+    { message: "Initializing Table Deployment Agent...", level: "info", delay: 0 },
+    { message: "Validating target catalog [main] permissions...", level: "info", delay: 600 },
+    { message: "Preparing Infrastructure-as-Code (Terraform) buffer...", level: "info", delay: 1200 },
+    { message: "Awaiting final approval for deployment manifest...", level: "warning", delay: 1800 },
   ],
   8: [
-    { message: "Initializing Migration Plan Generator...", level: "info", delay: 0 },
-    { message: "Loading credentials from CRED output...", level: "info", delay: 700 },
-    { message: "Loading table creation status...", level: "info", delay: 1400 },
-    { message: "Loading strategy definitions...", level: "info", delay: 2000 },
-    { message: "Consolidating migration entries...", level: "info", delay: 2800 },
-    { message: "Generating migration_plan.json...", level: "info", delay: 3600 },
-    { message: "Writing manifest file...", level: "info", delay: 4200 },
-    { message: "Migration plan generated successfully", level: "success", delay: 4800 },
+    { message: "Aggregating all agent outputs into master manifest...", level: "info", delay: 0 },
+    { message: "Consolidating vault secret IDs and strategic DAGs...", level: "info", delay: 700 },
+    { message: "Generating migration_plan.json (Version: 2.1.0)...", level: "info", delay: 1400 },
+    { message: "Synthesizing CLI execution scripts (execution.py)...", level: "info", delay: 2000 },
+    { message: "Verifying plan checksum integrity...", level: "info", delay: 2800 },
+    { message: "Compiling human-readable summary for stakeholders...", level: "info", delay: 3600 },
+    { message: "Asset bundle exported to /tmp/migration_assets/.", level: "success", delay: 4400 },
+    { message: "Master Execution Plan is Ready for Deployment.", level: "success", delay: 5000 },
   ],
 };
 
@@ -381,60 +375,86 @@ export class MemStorage implements IStorage {
     switch (stepNum) {
       case 1:
         return {
-          pipelines: session.tables.map((t, i) => ({
-            pipeline_id: `pipeline_${i + 1}`,
-            source_type: session.sourceType?.toLowerCase().replace(" ", "_"),
+          orchestration_context: {
+            pipeline_id: `DP-${Math.random().toString(36).substring(7).toUpperCase()}`,
+            source_system: session.sourceType,
+            tables_count: session.tables.length,
+            target_catalog: "main.lakehouse_bronze",
+            agent_count: 8
+          },
+          topology: session.tables.map((t, i) => ({
+            id: i + 1,
             table: t,
-            ingestion_mode: "incremental",
-            schedule: "daily",
+            sync_schedule: "daily",
+            priority: "high"
           })),
         };
       case 3:
         return {
-          results: session.tables.map(t => ({
-            table: t,
-            status: "success",
-            message: "Connection validated",
-          })),
+          connectivity_report: {
+            status: "HEALTHY",
+            probes: session.tables.map(t => ({
+              table: t,
+              latency_ms: Math.floor(Math.random() * 50) + 10,
+              encryption: "TLS 1.3",
+              result: "HANDSHAKE_SUCCESS"
+            })),
+          }
         };
       case 4:
         return {
-          tables: session.tables.reduce((acc, t) => ({
-            ...acc,
-            [t]: {
-              columns: ["id", "name", "created_at", "updated_at"],
-              sample_rows: 5,
-            },
-          }), {}),
+          metadata_catalog: {
+            source: session.sourceType,
+            schema_version: "2.1",
+            objects: session.tables.reduce((acc, t) => ({
+              ...acc,
+              [t]: {
+                physical_name: `dbo.${t}`,
+                columns: [
+                  { name: "id", type: "BIGINT", pk: true },
+                  { name: "payload", type: "NVARCHAR(MAX)" },
+                  { name: "updated_at", type: "DATETIME", watermark: true }
+                ],
+                stats: { rows: "4.2M", size_gb: "1.2" }
+              }
+            }), {}),
+          }
         };
       case 5:
         return {
-          strategies: session.tables.map(t => ({
-            table: t,
-            write_strategy: "merge",
-            watermark_column: "updated_at",
-            partition_by: "created_at",
-            parallelism: 4,
-          })),
+          migration_strategy: {
+            optimization_goal: "SHUFFLE_MINIMIZATION",
+            partitioning_scheme: "MONTHLY_BY_DATE",
+            cluster_config: { min_workers: 2, max_workers: 8, machine_type: "Standard_DS3_v2" },
+            table_strategies: session.tables.map(t => ({
+              table: t,
+              mode: "APPEND_ONLY_DELTA",
+              compaction: "enabled",
+              liquid_clustering: true
+            })),
+          }
         };
       case 6:
         return {
-          schemas: session.tables.map(t => ({
-            table: `main.bronze.${t}`,
-            ddl: `CREATE TABLE IF NOT EXISTS main.bronze.${t} (\n  id BIGINT,\n  name STRING,\n  created_at DATE,\n  updated_at TIMESTAMP,\n  ingestion_ts TIMESTAMP,\n  source_system STRING\n)`,
-            primary_key: "id",
+          schema_definitions: session.tables.map(t => ({
+            table: `bronze.${t}`,
+            ddl: `CREATE TABLE IF NOT EXISTS main.bronze.${t} (\n  id BIGINT,\n  raw_json VARIANT,\n  _ingest_ts TIMESTAMP,\n  _source_checksum STRING\n) USING DELTA TBLPROPERTIES ('delta.enableChangeDataFeed' = 'true')`,
+            mapping_logic: "SOURCE_TRANSLATION_V2"
           })),
         };
       case 8:
         return {
-          migration_plan: session.tables.map(t => ({
-            source_name: t,
-            target_table: `main.bronze.${t}`,
-            write_strategy: "merge",
-            load_type: "incremental",
-            watermark_column: "updated_at",
-            parallelism: 4,
-          })),
+          deployment_bundle: {
+            version: "PRO-4.1.0",
+            deployment_id: `DP-DEPLOY-${session.id.toUpperCase()}`,
+            manifest: {
+              source_endpoint: "azure-sql.db.windows.net",
+              target_workspace: "databricks-prod-001",
+              migration_manifest_url: `s3://datapatron/plans/${session.id}/manifest.json`,
+              generated_at: new Date().toISOString()
+            },
+            instructions: "Run 'datapatron deploy' using the provided CLI tool."
+          }
         };
       default:
         return {};
